@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum as SAEnum, DECIMAL, TIMESTAMP, FetchedValue
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum as SAEnum, DECIMAL, TIMESTAMP, FetchedValue, func
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import UUID
 from app.database import Base
 import enum
 
@@ -14,6 +14,7 @@ class Pago(Base):
     __tablename__ = "pagos"
 
     id_pago = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id_tenant", ondelete="CASCADE"), nullable=True)
     incidente_id = Column(Integer, ForeignKey("incidentes.id_incidente"), unique=True)
     dueño_taller_id = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False) # 🔗 El vínculo al Tallerista
     monto_total_decimal = Column(DECIMAL(10, 2), nullable=False)
@@ -25,3 +26,4 @@ class Pago(Base):
 
     incidente = relationship("Incidente")
     dueño = relationship("Usuario")
+    tenant = relationship("Tenant", back_populates="pagos")

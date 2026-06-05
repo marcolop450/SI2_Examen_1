@@ -6,6 +6,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from decimal import Decimal
+from uuid import UUID
 
 
 # -------------------------------------------------------
@@ -56,6 +57,7 @@ class TallerUpdate(BaseModel):
 # -------------------------------------------------------
 class TallerOut(BaseModel):
     id_taller:         int
+    tenant_id:         Optional[UUID] = None
     dueño_id:          int
 
     # Datos del dueño (del usuario relacionado)

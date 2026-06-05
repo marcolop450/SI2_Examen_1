@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, ForeignKey, DECIMAL, Text, String, TIMESTAMP
+from sqlalchemy import Column, Integer, ForeignKey, DECIMAL, Text, String, TIMESTAMP, func
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from app.database import Base
+
 
 class Cotizacion(Base):
     __tablename__ = "cotizaciones"

@@ -13,14 +13,16 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+from uuid import UUID
 
 from app.database import get_db
 from app.models.usuario import Usuario, TipoRol
 from app.models.taller import Taller
+from app.models import Plan, Tenant
 from app.schemas.taller import TallerCreate, TallerUpdate, TallerOut
 from app.utils.security import hash_password
-from app.routers.auth import get_current_user
+from app.routers.auth import get_current_user, get_current_tenant
 
 router = APIRouter(prefix="/talleres", tags=["CU3 - Gestión de Talleres"])
 
@@ -46,6 +48,7 @@ def require_admin(current_user: Usuario = Depends(get_current_user)):
 def taller_a_schema(taller: Taller) -> TallerOut:
     return TallerOut(
         id_taller        = taller.id_taller,
+        tenant_id        = taller.tenant_id,
         dueño_id         = taller.dueño_id,
         nombre_dueno     = taller.dueno.nombre,
         email_dueno      = taller.dueno.email,
@@ -63,9 +66,22 @@ def taller_a_schema(taller: Taller) -> TallerOut:
 @router.post("/", response_model=TallerOut, status_code=status.HTTP_201_CREATED)
 def registrar_taller(
     datos: TallerCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+    tenant_id: Optional[UUID] = Depends(get_current_tenant)
 ):
-    # 1. Verificar que el email no esté ya registrado
+    # 1. Validación de Límites por Plan SaaS (Solo si hay tenant_id)
+    if tenant_id is not None:
+        plan = db.query(Plan).join(Tenant).filter(Tenant.id_tenant == tenant_id).first()
+        if plan and plan.limite_talleres is not None:
+            talleres_actuales = db.query(Taller).filter(Taller.tenant_id == tenant_id).count()
+            if talleres_actuales >= plan.limite_talleres:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Límite de talleres excedido para tu plan actual. Por favor, mejora tu suscripción corporativa."
+                )
+
+    # 2. Verificar que el email no esté ya registrado
     existe = db.query(Usuario).filter(Usuario.email == datos.email).first()
     if existe:
         raise HTTPException(
@@ -73,18 +89,19 @@ def registrar_taller(
             detail="El email ya está registrado"
         )
 
-    # 2. Crear el usuario dueño con rol 'taller'
+    # 3. Crear el usuario dueño con rol 'taller' y propagar el tenant_id
     nuevo_usuario = Usuario(
         nombre        = datos.nombre_dueno,
         email         = datos.email,
         password_hash = hash_password(datos.password),
         telefono      = datos.telefono,
-        rol           = TipoRol.taller
+        rol           = TipoRol.taller,
+        tenant_id     = tenant_id
     )
     db.add(nuevo_usuario)
     db.flush()  # Genera el id_usuario sin hacer commit aún
 
-    # 3. Crear el taller vinculado al usuario recién creado
+    # 4. Crear el taller vinculado al usuario recién creado y propagar el tenant_id
     nuevo_taller = Taller(
         dueño_id         = nuevo_usuario.id_usuario,
         nombre           = datos.nombre_taller,
@@ -92,6 +109,7 @@ def registrar_taller(
         nit              = datos.nit,
         latitud_decimal  = datos.latitud_decimal,
         longitud_decimal = datos.longitud_decimal,
+        tenant_id        = tenant_id
     )
     db.add(nuevo_taller)
     db.commit()
@@ -109,9 +127,13 @@ def registrar_taller(
 @router.get("/", response_model=List[TallerOut])
 def listar_talleres(
     db: Session = Depends(get_db),
-    _: Usuario  = Depends(require_admin)
+    _: Usuario  = Depends(require_admin),
+    tenant_id: Optional[UUID] = Depends(get_current_tenant)
 ):
-    talleres = db.query(Taller).all()
+    query = db.query(Taller)
+    if tenant_id is not None:
+        query = query.filter(Taller.tenant_id == tenant_id)
+    talleres = query.all()
     return [taller_a_schema(t) for t in talleres]
 
 

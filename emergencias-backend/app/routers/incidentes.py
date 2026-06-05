@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Optional
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -16,7 +17,7 @@ from app.models.taller import Taller
 from app.models.tecnico import Tecnico
 from app.models.incidente import Incidente, EvidenciaIA, HistorialEstado, EstadoIncidente, TipoEvidencia, PrioridadIncidente
 from app.schemas.incidente import IncidenteCreate, IncidenteOut, AccionSolicitud, AsignarTecnico, ActualizarEstado
-from app.routers.auth import get_current_user
+from app.routers.auth import get_current_user, get_current_tenant
 from app.routers.notificaciones import crear_notificacion_interna
 from app.models.taller_rechazo import TallerRechazo
 from app.utils.bitacora import registrar_evento  # CU21 — helper de bitácora
@@ -309,7 +310,8 @@ def registrar_emergencia(
 @router.get("/pendientes", response_model=List[IncidenteOut])
 def listar_solicitudes_pendientes(
     db: Session = Depends(get_db),
-    current_user: Usuario = Depends(get_current_user)
+    current_user: Usuario = Depends(get_current_user),
+    tenant_id: Optional[UUID] = Depends(get_current_tenant)
 ):
     # Buscar el taller del usuario autenticado
     taller = db.query(Taller).filter(
@@ -319,9 +321,12 @@ def listar_solicitudes_pendientes(
     if not taller:
         # Si es admin devuelve todos
         if current_user.rol.value == "admin":
-            return db.query(Incidente).filter(
+            query = db.query(Incidente).filter(
                 Incidente.estado_enum == EstadoIncidente.pendiente
-            ).all()
+            )
+            if tenant_id is not None:
+                query = query.filter(Incidente.tenant_id == tenant_id)
+            return query.all()
         return []
 
     # Obtener IDs de incidentes que este taller ya rechazó
@@ -331,11 +336,14 @@ def listar_solicitudes_pendientes(
     ids_rechazados = [r[0] for r in rechazados]
 
     # Solo ver el incidente asignado a este taller y que no haya rechazado
-    return db.query(Incidente).filter(
+    query = db.query(Incidente).filter(
         Incidente.estado_enum == EstadoIncidente.pendiente,
         Incidente.taller_actual_id == taller.id_taller,
         Incidente.id_incidente.notin_(ids_rechazados)
-    ).all()
+    )
+    if tenant_id is not None:
+        query = query.filter(Incidente.tenant_id == tenant_id)
+    return query.all()
 # ===================================================================
 # CU10: ACEPTAR O RECHAZAR SOLICITUD (taller responde)
 # ===================================================================
@@ -443,8 +451,14 @@ def asignar_tecnico(
 # CU12: LISTAR INCIDENTES EN PROCESO (para el técnico en Flutter)
 # ===================================================================
 @router.get("/en-proceso", response_model=List[IncidenteOut])
-def listar_solicitudes_en_proceso(db: Session = Depends(get_db)):
-    return db.query(Incidente).filter(Incidente.estado_enum == EstadoIncidente.en_proceso).all()
+def listar_solicitudes_en_proceso(
+    db: Session = Depends(get_db),
+    tenant_id: Optional[UUID] = Depends(get_current_tenant)
+):
+    query = db.query(Incidente).filter(Incidente.estado_enum == EstadoIncidente.en_proceso)
+    if tenant_id is not None:
+        query = query.filter(Incidente.tenant_id == tenant_id)
+    return query.all()
 
 # ===================================================================
 # CU12: ACTUALIZAR ESTADO DEL SERVICIO (técnico finaliza o avanza)
@@ -706,17 +720,21 @@ def obtener_emergencia_activa(
 def obtener_historial_tecnico(
     id_tecnico: int,
     db: Session = Depends(get_db),
-    current_user: Usuario = Depends(get_current_user)
+    current_user: Usuario = Depends(get_current_user),
+    tenant_id: Optional[UUID] = Depends(get_current_tenant)
 ):
     tecnico = db.query(Tecnico).filter(Tecnico.usuario_id == current_user.id_usuario).first()
     if not tecnico:
         return []  # Usuario no es técnico — devolver vacío sin crashear
 
     # Solo mostrar incidentes finalizados o atendidos
-    incidentes = db.query(Incidente).filter(
+    query = db.query(Incidente).filter(
         Incidente.tecnico_id == tecnico.id_tecnico,
         Incidente.estado_enum.in_([EstadoIncidente.atendido, EstadoIncidente.finalizado])
-    ).order_by(Incidente.fecha_creacion_timestamp.desc()).all()
+    )
+    if tenant_id is not None:
+        query = query.filter(Incidente.tenant_id == tenant_id)
+    incidentes = query.order_by(Incidente.fecha_creacion_timestamp.desc()).all()
 
     resultado = []
     for inc in incidentes:

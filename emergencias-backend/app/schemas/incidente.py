@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from decimal import Decimal
 from datetime import datetime
+from uuid import UUID
 from app.models.incidente import EstadoIncidente, PrioridadIncidente, TipoEvidencia
 
 # -------------------------------------------------------
@@ -67,6 +68,7 @@ class HistorialOut(BaseModel):
 
 class IncidenteOut(BaseModel):
     id_incidente:             int
+    tenant_id:                Optional[UUID] = None
     cliente_id:               int
     vehiculo_id:              int
     taller_actual_id:         Optional[int] = None

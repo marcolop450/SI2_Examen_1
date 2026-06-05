@@ -1,9 +1,9 @@
 # ============================================================
 # MODELO — Tabla ruta_tecnico (ya creada en la BD)
 # ============================================================
-from sqlalchemy import Column, Integer, Numeric, TIMESTAMP, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, Numeric, TIMESTAMP, ForeignKey, func
 from app.database import Base
+
 
 class RutaTecnico(Base):
     __tablename__ = "ruta_tecnico"

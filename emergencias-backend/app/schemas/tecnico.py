@@ -7,6 +7,7 @@
 #
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from uuid import UUID
 
 class TecnicoCreate(BaseModel):
     taller_id: int
@@ -32,6 +33,7 @@ class TecnicoPartial(BaseModel):
 
 class TecnicoOut(BaseModel):
     id_tecnico: int
+    tenant_id: Optional[UUID] = None
     taller_id: int
     usuario_id: int
     nombre: str        

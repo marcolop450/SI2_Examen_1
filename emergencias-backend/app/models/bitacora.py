@@ -2,9 +2,9 @@
 # CU21 — Bitácora de Trazabilidad del Incidente
 # Registro inmutable de todos los eventos de una emergencia
 # ============================================================
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, func
 from app.database import Base
+
 
 class BitacoraIncidente(Base):
     __tablename__ = "bitacora_incidente"
