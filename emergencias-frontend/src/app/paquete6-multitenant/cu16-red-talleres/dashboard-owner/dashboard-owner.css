@@ -1,0 +1,274 @@
+/* ===========================
+   DASHBOARD OWNER — CSS PURO
+   Paleta: #f8fafc #e2e8f0 #0f172a #1e40af #f97316
+   =========================== */
+
+/* === BASE === */
+.dashboard-owner {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding: 0;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #0f172a;
+}
+
+/* ========== BANNER SUPERIOR OSCURO ========== */
+.banner-suscripcion {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #ffffff;
+  padding: 2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.banner-info h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.3rem 0;
+}
+
+.banner-subdominio {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.banner-estado {
+  text-align: right;
+}
+
+.badge-estado {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.estado-activo {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.estado-vencido {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.banner-plan {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+.banner-dias {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ========== TARJETA DE CONSUMO ========== */
+.consumo-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 2rem 0 2rem;
+}
+
+.consumo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.consumo-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.consumo-ratio {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.consumo-critico {
+  color: #f97316;
+}
+
+/* Barra de progreso CSS nativa */
+.progress-bar-container {
+  width: 100%;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #1e40af;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progress-critico {
+  background: #f97316;
+}
+
+.consumo-detalle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.consumo-alerta {
+  color: #f97316;
+  font-weight: 600;
+}
+
+/* ========== MIS TALLERES ========== */
+.talleres-section {
+  margin: 2rem 2rem 0 2rem;
+}
+
+.talleres-section h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.talleres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.taller-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.taller-card:hover {
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+.taller-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.badge-operativo {
+  background: #f0fdf4;
+  color: #166534;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.taller-direccion {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ========== ACCIONES RÁPIDAS ========== */
+.acciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem;
+}
+
+.btn-accion {
+  padding: 0.9rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, transform 0.15s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #1e40af;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #f97316;
+  transform: scale(1.02);
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+  transform: scale(1.02);
+}
+
+.btn-accion:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .banner-suscripcion {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    gap: 1rem;
+  }
+
+  .banner-estado {
+    text-align: center;
+  }
+
+  .banner-info h1 {
+    font-size: 1.35rem;
+  }
+
+  .consumo-card,
+  .talleres-section,
+  .acciones-grid {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .consumo-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .talleres-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-grid {
+    grid-template-columns: 1fr;
+  }
+}

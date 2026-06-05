@@ -1,0 +1,76 @@
+<section class="dashboard-owner">
+
+  <!-- ========== BANNER SUPERIOR (Estilo Premium Oscuro) ========== -->
+  <div class="banner-suscripcion">
+    <div class="banner-info">
+      <h1>{{ nombreRed }}</h1>
+      <p class="banner-subdominio">{{ subdominio }}.emergencias.app</p>
+    </div>
+    <div class="banner-estado">
+      <span class="badge-estado"
+            [class.estado-activo]="estadoSuscripcion === 'Activo'"
+            [class.estado-vencido]="estadoSuscripcion !== 'Activo'">
+        {{ estadoSuscripcion }}
+      </span>
+      <p class="banner-plan">Plan {{ nombrePlan }}</p>
+      <p class="banner-dias">{{ diasRestantes }} días restantes</p>
+    </div>
+  </div>
+
+  <!-- ========== TARJETA DE CONSUMO DE CUOTA ========== -->
+  <div class="consumo-card">
+    <div class="consumo-header">
+      <h2>Consumo de Cuota</h2>
+      <span class="consumo-ratio"
+            [class.consumo-critico]="limiteAlcanzado">
+        {{ talleresCreados }} / {{ limiteTalleres }} talleres
+      </span>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill"
+           [style.width.%]="porcentajeUso"
+           [class.progress-critico]="limiteAlcanzado">
+      </div>
+    </div>
+
+    <p class="consumo-detalle">
+      <span *ngIf="!limiteAlcanzado">
+        Puedes registrar {{ limiteTalleres - talleresCreados }} sucursal(es) más en tu plan actual.
+      </span>
+      <span *ngIf="limiteAlcanzado" class="consumo-alerta">
+        ⚠️ Has alcanzado el límite de tu plan. Contacta al administrador para ampliar tu cuota.
+      </span>
+    </p>
+  </div>
+
+  <!-- ========== MIS TALLERES ========== -->
+  <div class="talleres-section">
+    <h2>Mis Talleres</h2>
+    <div class="talleres-grid">
+      <div *ngFor="let taller of talleres" class="taller-card">
+        <div class="taller-card-header">
+          <strong>{{ taller.nombre }}</strong>
+          <span class="badge-operativo">{{ taller.estado }}</span>
+        </div>
+        <p class="taller-direccion">📍 {{ taller.direccion }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ACCIONES RÁPIDAS ========== -->
+  <div class="acciones-grid">
+    <button class="btn-accion btn-primary"
+            [disabled]="limiteAlcanzado"
+            routerLink="/registro-b2b">
+      🏪 Registrar Nueva Sucursal
+    </button>
+    <button class="btn-accion btn-secondary" routerLink="/talleres">
+      📋 Ver Operaciones
+    </button>
+    <button class="btn-accion btn-secondary" routerLink="/planes">
+      📊 Cambiar de Plan
+    </button>
+  </div>
+
+</section>

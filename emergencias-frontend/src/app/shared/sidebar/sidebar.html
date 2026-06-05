@@ -35,6 +35,15 @@
       <a routerLink="/comisiones" routerLinkActive="active" class="nav-link">
         <span class="icon">📊</span> Comisiones
       </a>
+
+      <!-- 🆕 SECCIÓN CU16: ADMIN COCKPIT -->
+      <p class="nav-title">Paquete 6: Multi-Tenant</p>
+      <a routerLink="/admin-cockpit" routerLinkActive="active" class="nav-link">
+        <span class="icon">📊</span> Cockpit SaaS
+      </a>
+      <a routerLink="/planes" routerLinkActive="active" class="nav-link">
+        <span class="icon">💎</span> Catálogo de Planes
+      </a>
     </ng-container>
 
     <ng-container *ngIf="rolUsuario === 'taller'">
@@ -60,6 +69,14 @@
       <a routerLink="/mis-ingresos" routerLinkActive="active" class="nav-link">
         <span class="icon">💰</span> Mis Ingresos
       </a>
+
+      <!-- 🆕 SECCIÓN CU16: TENANT OWNER (solo si tiene tenant_id) -->
+      <ng-container *ngIf="esTenantOwner">
+        <p class="nav-title">Paquete 6: Mi Red</p>
+        <a routerLink="/dashboard-owner" routerLinkActive="active" class="nav-link">
+          <span class="icon">🏪</span> Mi Red de Talleres
+        </a>
+      </ng-container>
     </ng-container>
     <ng-container *ngIf="rolUsuario === 'tecnico'">
       <p class="nav-title">Mi Trabajo</p>

@@ -1,0 +1,62 @@
+<section class="landing-planes">
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Potencia tu Red de Talleres</h1>
+    <p class="hero-subtitle">
+      Elige el plan perfecto para digitalizar y escalar tu negocio automotriz.
+    </p>
+  </div>
+
+  <!-- ESTADO DE CARGA -->
+  <div *ngIf="cargando" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando planes...</p>
+  </div>
+
+  <!-- ESTADO DE ERROR -->
+  <div *ngIf="error" class="error-banner">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- GRID DE TARJETAS -->
+  <div *ngIf="!cargando && !error" class="planes-grid">
+    <div
+      *ngFor="let plan of planes"
+      class="plan-card"
+      (click)="seleccionarPlan(plan)"
+    >
+      <div class="plan-header">
+        <h2>{{ plan.nombre }}</h2>
+        <span class="plan-precio">
+          ${{ plan.precio }}<small>/mes</small>
+        </span>
+      </div>
+
+      <p class="plan-descripcion">{{ plan.descripcion }}</p>
+
+      <ul class="plan-features">
+        <li>
+          <span class="feature-icon">🏪</span>
+          Hasta <strong>{{ plan.limite_talleres ?? '∞' }}</strong> talleres
+        </li>
+        <li>
+          <span class="feature-icon">👥</span>
+          Hasta <strong>{{ plan.limite_usuarios ?? '∞' }}</strong> usuarios
+        </li>
+        <li>
+          <span class="feature-icon">🔧</span>
+          Hasta <strong>{{ plan.limite_incidentes ?? '∞' }}</strong> incidentes/mes
+        </li>
+      </ul>
+
+      <button class="btn-seleccionar" (click)="seleccionarPlan(plan)">
+        Comenzar ahora →
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="landing-footer">
+    <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </div>
+</section>
