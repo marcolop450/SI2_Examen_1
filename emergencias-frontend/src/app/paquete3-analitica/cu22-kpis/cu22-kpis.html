@@ -1,0 +1,273 @@
+<!-- #Ciclo5 CU22 Panel de KPIs y Analítica Operacional - Template con TODOS los KPIs del enunciado -->
+<div class="kpis-container">
+  <div class="kpis-header">
+    <h1>📊 Panel de KPIs y Analítica Operacional</h1>
+    <p class="subtitle">Métricas en tiempo real calculadas desde la base de datos</p>
+  </div>
+
+  <!-- #Ciclo5 CU22 Loading skeleton -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando métricas operacionales...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 1: KPIs principales (6 cards) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="kpi-cards-grid">
+      <div class="kpi-card blue">
+        <span class="kpi-icon">📋</span>
+        <span class="kpi-value">{{ resumen.total_incidentes }}</span>
+        <span class="kpi-label">Total Incidentes</span>
+      </div>
+      <div class="kpi-card green">
+        <span class="kpi-icon">✅</span>
+        <span class="kpi-value">{{ resumen.incidentes_finalizados }}</span>
+        <span class="kpi-label">Finalizados</span>
+      </div>
+      <div class="kpi-card orange">
+        <span class="kpi-icon">⏳</span>
+        <span class="kpi-value">{{ resumen.incidentes_activos }}</span>
+        <span class="kpi-label">Activos</span>
+      </div>
+      <div class="kpi-card purple">
+        <span class="kpi-icon">📈</span>
+        <span class="kpi-value">{{ resumen.tasa_exito }}%</span>
+        <span class="kpi-label">Tasa de Éxito</span>
+      </div>
+      <div class="kpi-card emerald">
+        <span class="kpi-icon">💰</span>
+        <span class="kpi-value">{{ resumen.ingresos_totales | number:'1.0-0' }}</span>
+        <span class="kpi-label">Bs. Ingresos</span>
+      </div>
+      <div class="kpi-card gold">
+        <span class="kpi-icon">⭐</span>
+        <span class="kpi-value">{{ resumen.calificacion_promedio }}/5</span>
+        <span class="kpi-label">Calificación</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 2: Tiempos obligatorios del enunciado -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="section-title">⏱️ Indicadores de Tiempo (Enunciado Obligatorio)</div>
+    <div class="tiempos-grid">
+      <div class="tiempo-card">
+        <div class="tiempo-header">
+          <span class="tiempo-icon blue-bg">🏁</span>
+          <h3>Tiempo Promedio de Asignación</h3>
+        </div>
+        <p class="tiempo-desc">Tiempo entre reporte del cliente y taller asignado</p>
+        <div class="tiempo-value">{{ tiempoAsignacion.avg_minutos }} <small>min</small></div>
+        <div class="tiempo-meta">{{ tiempoAsignacion.total_medidos }} incidentes medidos</div>
+      </div>
+      <div class="tiempo-card">
+        <div class="tiempo-header">
+          <span class="tiempo-icon green-bg">🚗</span>
+          <h3>Tiempo Promedio de Llegada</h3>
+        </div>
+        <p class="tiempo-desc">Tiempo entre asignación y llegada del técnico</p>
+        <div class="tiempo-value">{{ tiempoLlegada.avg_minutos }} <small>min</small></div>
+        <div class="tiempo-meta">{{ tiempoLlegada.total_medidos }} incidentes medidos</div>
+      </div>
+      <div class="tiempo-card">
+        <div class="tiempo-header">
+          <span class="tiempo-icon purple-bg">🔧</span>
+          <h3>Tiempo Promedio de Atención</h3>
+        </div>
+        <p class="tiempo-desc">Tiempo total desde reporte hasta finalización</p>
+        <div class="tiempo-value">{{ resumen.tiempo_promedio_atencion_min }} <small>min</small></div>
+        <div class="tiempo-meta">{{ resumen.incidentes_finalizados }} finalizados</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 3: SLA y Técnicos -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="section-title">📋 Cumplimiento SLA y Recursos</div>
+    <div class="sla-grid">
+      <!-- #Ciclo5 CU22 SLA Gauge -->
+      <div class="sla-card">
+        <h3>🎯 Nivel de Cumplimiento SLA</h3>
+        <p class="sla-subtitle">Servicios atendidos dentro de {{ sla.sla_objetivo_min }} minutos</p>
+        <div class="sla-gauge">
+          <div class="gauge-circle">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-linecap="round"
+                [attr.stroke]="sla.porcentaje_cumplimiento >= 80 ? '#22c55e' : sla.porcentaje_cumplimiento >= 50 ? '#f59e0b' : '#ef4444'"
+                [attr.stroke-dasharray]="(sla.porcentaje_cumplimiento / 100 * 314) + ' 314'"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <span class="gauge-text">{{ sla.porcentaje_cumplimiento }}%</span>
+          </div>
+        </div>
+        <div class="sla-details">
+          <div class="sla-detail green-text">✅ Dentro SLA: {{ sla.dentro_sla }}</div>
+          <div class="sla-detail red-text">❌ Fuera SLA: {{ sla.fuera_sla }}</div>
+          <div class="sla-detail">⏱️ Promedio: {{ sla.tiempo_promedio_min }} min</div>
+        </div>
+      </div>
+
+      <!-- #Ciclo5 CU22 Técnicos -->
+      <div class="tecnicos-card">
+        <h3>👷 Disponibilidad de Técnicos</h3>
+        <div class="tecnicos-visual">
+          <div class="tecnicos-bar">
+            <div class="tecnicos-fill" [style.width.%]="resumen.tecnicos_total > 0 ? (resumen.tecnicos_disponibles / resumen.tecnicos_total * 100) : 0"></div>
+          </div>
+          <div class="tecnicos-nums">
+            <span class="tec-disp">{{ resumen.tecnicos_disponibles }} disponibles</span>
+            <span class="tec-total">de {{ resumen.tecnicos_total }} total</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- #Ciclo5 CU22 Cancelados -->
+      <div class="cancelados-card">
+        <h3>🚫 Casos Cancelados</h3>
+        <div class="cancelados-count">
+          {{ getCancelados() }}
+        </div>
+        <p class="cancelados-desc">Emergencias canceladas o no atendidas</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 4: Gráficos (barras por mes + donut estado) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="section-title">📊 Visualización de Datos</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>📅 Incidentes por Mes (últimos 6 meses)</h3>
+        <canvas #barCanvas style="width:100%;height:250px;"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>🔄 Distribución por Estado</h3>
+        <canvas #donutCanvas style="width:100%;height:250px;"></canvas>
+        <div class="legend">
+          <span *ngFor="let e of porEstado" class="legend-item">
+            <span class="legend-dot" [style.background]="getColorEstado(e.estado)"></span>
+            {{ e.estado.replace('_',' ') }} ({{ e.total }})
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 5: Incidentes por Tipo + Zonas -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="section-title">🔍 Análisis por Tipo y Zona</div>
+    <div class="charts-grid">
+      <!-- #Ciclo5 CU22 Incidentes por tipo (batería, llanta, motor, choque) -->
+      <div class="chart-card">
+        <h3>🔧 Incidentes por Tipo</h3>
+        <canvas #tipoCanvas style="width:100%;height:220px;" *ngIf="porTipo.length"></canvas>
+        <div class="tipo-list" *ngIf="porTipo.length">
+          <div class="tipo-item" *ngFor="let t of porTipo; let i = index">
+            <span class="tipo-badge" [style.background]="coloresTipo[i % coloresTipo.length]">{{ t.tipo.toUpperCase() }}</span>
+            <span class="tipo-count">{{ t.total }} incidentes</span>
+          </div>
+        </div>
+        <div class="empty-msg" *ngIf="!porTipo.length">Sin datos de clasificación IA</div>
+      </div>
+
+      <!-- #Ciclo5 CU22 Zonas con más incidentes -->
+      <div class="chart-card">
+        <h3>📍 Zonas con Más Incidentes</h3>
+        <div class="zonas-table" *ngIf="zonasIncidentes.length">
+          <div class="zonas-header">
+            <span>Zona (Lat, Lng)</span>
+            <span>Incidentes</span>
+            <span>Densidad</span>
+          </div>
+          <div class="zonas-row" *ngFor="let z of zonasIncidentes; let i = index">
+            <span class="zona-coords">
+              <span class="zona-rank">{{ i + 1 }}</span>
+              {{ z.lat }}, {{ z.lng }}
+            </span>
+            <span class="zona-count">{{ z.total }}</span>
+            <span class="zona-bar-container">
+              <span class="zona-bar" [style.width.%]="(z.total / zonasIncidentes[0].total * 100)"></span>
+            </span>
+          </div>
+        </div>
+        <div class="empty-msg" *ngIf="!zonasIncidentes.length">Sin datos de ubicación</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 FILA 6: Talleres más eficientes (admin) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="talleresRanking.length">
+      <div class="section-title">🏆 Talleres Más Eficientes</div>
+      <div class="ranking-table">
+        <div class="ranking-header">
+          <span>#</span>
+          <span>Taller</span>
+          <span>Servicios</span>
+          <span>Calificación</span>
+        </div>
+        <div class="ranking-row" *ngFor="let t of talleresRanking; let i = index">
+          <span class="rank-badge" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">{{ i+1 }}</span>
+          <span class="rank-name">{{ t.nombre }}</span>
+          <span class="rank-services">{{ t.servicios_completados }}</span>
+          <span class="rank-stars">
+            <span *ngFor="let s of getEstrellas(t.calificacion_promedio)">⭐</span>
+            {{ t.calificacion_promedio }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- #Ciclo5 CU22 TABLA RESUMEN de KPIs obligatorios del enunciado -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="section-title">📋 Tabla Resumen de KPIs (Enunciado)</div>
+    <div class="resumen-table">
+      <div class="resumen-header">
+        <span>KPI</span>
+        <span>Descripción</span>
+        <span>Valor Actual</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">⏱️ Tiempo promedio de asignación</span>
+        <span>Tiempo entre reporte y taller asignado</span>
+        <span class="resumen-val">{{ tiempoAsignacion.avg_minutos }} min</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">🚗 Tiempo promedio de llegada</span>
+        <span>Tiempo entre asignación y llegada</span>
+        <span class="resumen-val">{{ tiempoLlegada.avg_minutos }} min</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">🔧 Incidentes por tipo</span>
+        <span>Batería, llanta, motor, choque, otros</span>
+        <span class="resumen-val">{{ porTipo.length }} tipos</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">🏆 Talleres más eficientes</span>
+        <span>Según tiempo de respuesta y finalización</span>
+        <span class="resumen-val">{{ talleresRanking.length }} talleres</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">📍 Zonas con más incidentes</span>
+        <span>Según ubicación geográfica</span>
+        <span class="resumen-val">{{ zonasIncidentes.length }} zonas</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">🚫 Casos cancelados</span>
+        <span>Emergencias canceladas o no atendidas</span>
+        <span class="resumen-val">{{ getCancelados() }} casos</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-kpi">🎯 Nivel de cumplimiento SLA</span>
+        <span>Servicios atendidos dentro del tiempo esperado</span>
+        <span class="resumen-val sla-highlight">{{ sla.porcentaje_cumplimiento }}%</span>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router'; // #Ciclo5 CU21 Para enlace a bitácora
 import { interval, Subscription } from 'rxjs';
 import Swal from 'sweetalert2'; 
 import { IncidenteService } from '../../core/services/incidente';
@@ -10,7 +11,7 @@ import { TecnicoOut } from '../../shared/models/tecnico.model';
 @Component({
   selector: 'app-emergencias',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule], // #Ciclo5 CU21 RouterModule para bitácora
   templateUrl: './emergencias.html',
   styleUrls: ['./emergencias.css']
 })

@@ -56,6 +56,10 @@
             <button class="btn-secundario" style="background-color: #0D1B2A; color: white;" (click)="verAnalisisIA(em)">
               🤖 Ver IA
             </button>
+            <!-- #Ciclo5 CU21 Botón para ver bitácora del incidente -->
+            <a class="btn-bitacora" [routerLink]="['/bitacora', em.id_incidente]">
+              📜 Bitácora
+            </a>
 
             <button class="btn-rechazar" (click)="responder(em, 'rechazar')">Rechazar</button>
             <button class="btn-secundario"

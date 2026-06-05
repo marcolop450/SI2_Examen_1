@@ -1,0 +1,79 @@
+<!-- Template de Consejos de Seguridad Vial - Ciclo 5 - CU25 -->
+<div class="consejos-container">
+  <div class="consejos-header">
+    <div>
+      <h1>🛡️ Consejos de Seguridad Vial</h1>
+      <p class="subtitle">Tips y recomendaciones para emergencias vehiculares</p>
+    </div>
+    <button class="btn-nuevo" *ngIf="rolUsuario === 'admin'" (click)="toggleForm()">
+      {{ showForm ? '✕ Cancelar' : '+ Nuevo Consejo' }}
+    </button>
+  </div>
+
+  <!-- Formulario inline para crear/editar - Ciclo 5 - CU25 -->
+  <div class="form-card" *ngIf="showForm">
+    <h3>{{ editingConsejo ? '✏️ Editar Consejo' : '➕ Nuevo Consejo' }}</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Categoría</label>
+        <select [(ngModel)]="formData.categoria" class="form-select">
+          <option *ngFor="let c of ['llanta','motor','bateria','choque','general','clima']" [value]="c">
+            {{ getCategoriaIcon(c) }} {{ c | titlecase }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Icono (emoji)</label>
+        <input type="text" [(ngModel)]="formData.icono" class="form-input" maxlength="4" />
+      </div>
+      <div class="form-group full">
+        <label>Título</label>
+        <input type="text" [(ngModel)]="formData.titulo" class="form-input" placeholder="Título del consejo..." />
+      </div>
+      <div class="form-group full">
+        <label>Contenido</label>
+        <textarea [(ngModel)]="formData.contenido" class="form-textarea" rows="3" placeholder="Descripción detallada del consejo..."></textarea>
+      </div>
+    </div>
+    <button class="btn-guardar" (click)="guardarConsejo()">
+      {{ editingConsejo ? 'Actualizar' : 'Crear Consejo' }}
+    </button>
+  </div>
+
+  <!-- Filtros por categoría - Ciclo 5 - CU25 -->
+  <div class="categorias-row">
+    <button *ngFor="let c of categorias" class="cat-pill" [class.active]="selectedCategoria === c" (click)="filtrarPorCategoria(c)">
+      <span class="cat-emoji">{{ getCategoriaIcon(c) }}</span>
+      {{ c | titlecase }}
+    </button>
+  </div>
+
+  <!-- Loading - Ciclo 5 - CU25 -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando consejos...</p>
+  </div>
+
+  <!-- Empty state - Ciclo 5 - CU25 -->
+  <div class="empty-state" *ngIf="!isLoading && filteredConsejos.length === 0">
+    <span class="empty-icon">📭</span>
+    <h3>Sin consejos</h3>
+    <p>No hay consejos registrados en esta categoría.</p>
+  </div>
+
+  <!-- Grid de consejos - Ciclo 5 - CU25 -->
+  <div class="consejos-grid" *ngIf="!isLoading && filteredConsejos.length > 0">
+    <div class="consejo-card" *ngFor="let c of filteredConsejos" [style.border-top-color]="getCategoriaColor(c.categoria)">
+      <div class="consejo-icono">{{ c.icono }}</div>
+      <span class="consejo-categoria" [style.background]="getCategoriaColor(c.categoria) + '20'" [style.color]="getCategoriaColor(c.categoria)">
+        {{ c.categoria | titlecase }}
+      </span>
+      <h3 class="consejo-titulo">{{ c.titulo }}</h3>
+      <p class="consejo-contenido">{{ c.contenido }}</p>
+      <div class="consejo-actions" *ngIf="rolUsuario === 'admin'">
+        <button class="btn-edit" (click)="editarConsejo(c)">✏️ Editar</button>
+        <button class="btn-delete" (click)="eliminarConsejo(c.id_consejo)">🗑️ Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

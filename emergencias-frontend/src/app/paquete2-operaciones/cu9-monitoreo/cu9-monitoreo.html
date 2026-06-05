@@ -32,7 +32,11 @@
           </div>
         </div>
         
-        <div class="acciones">
+        <div class="acciones" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 15px;">
+          <!-- #Ciclo5 CU21 Enlace a bitácora del incidente activo -->
+          <a [routerLink]="['/bitacora', s.id_incidente]" style="padding: 10px 16px; background: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; text-align: center;">
+            📜 Ver Bitácora
+          </a>
           <button class="btn-finalizar" (click)="finalizarServicio(s.id_incidente)">
             ✅ Finalizar y Liberar Técnico
           </button>

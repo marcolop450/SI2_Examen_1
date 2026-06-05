@@ -107,3 +107,25 @@
   50% { transform: scale(1.05); box-shadow: 0 0 10px #ef4444; }
   100% { transform: scale(1); }
 }
+
+/* #Ciclo5 CU21 Botón para ver bitácora */
+.btn-bitacora { background: #0f172a; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
+.btn-bitacora:hover { background: #1e293b; transform: translateY(-1px); }
+
+/* ═══ RESPONSIVE FIXES ═══ */
+@media (max-width: 768px) {
+  .contenido-derecha { padding: 12px; }
+  .header-seccion { flex-wrap: wrap; gap: 0.5rem; }
+  .titulo-pagina { font-size: 18px; }
+  .subtitulo-pagina { font-size: 12px; }
+  .grid-tarjetas { grid-template-columns: 1fr; gap: 12px; }
+  .card-footer { flex-wrap: wrap; }
+  .btn-rechazar, .btn-aceptar { flex: 1 1 45%; min-width: 0; font-size: 13px; padding: 8px; }
+  .btn-secundario { font-size: 12px; padding: 8px 10px; }
+  .diagnostico { font-size: 14px; }
+  .modal-container { width: 95%; }
+}
+@media (max-width: 480px) {
+  .header-seccion { flex-direction: column; align-items: flex-start; }
+  .btn-refrescar { width: 100%; text-align: center; }
+}

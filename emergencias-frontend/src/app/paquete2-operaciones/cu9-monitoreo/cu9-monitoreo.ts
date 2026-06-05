@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router'; // #Ciclo5 CU21 Para enlace a bitácora
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-cu9-monitoreo',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // #Ciclo5 CU21 RouterModule para bitácora
   templateUrl: './cu9-monitoreo.html',
   styleUrls: ['./cu9-monitoreo.css']
 })

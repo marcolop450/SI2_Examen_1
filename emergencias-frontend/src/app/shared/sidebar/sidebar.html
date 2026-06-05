@@ -35,6 +35,18 @@
       <a routerLink="/comisiones" routerLinkActive="active" class="nav-link">
         <span class="icon">📊</span> Comisiones
       </a>
+
+      <!-- Ciclo 5 - CU22, CU24, CU25 -->
+      <p class="nav-title">Ciclo 5: Analítica</p>
+      <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
+        <span class="icon">📊</span> Analítica KPIs
+      </a>
+      <a routerLink="/reportes-ia" routerLinkActive="active" class="nav-link">
+        <span class="icon">🤖</span> Reportes IA
+      </a>
+      <a routerLink="/consejos-viales" routerLinkActive="active" class="nav-link">
+        <span class="icon">🛡️</span> Consejos Viales
+      </a>
     </ng-container>
 
     <ng-container *ngIf="rolUsuario === 'taller'">
@@ -59,6 +71,18 @@
       </a>
       <a routerLink="/mis-ingresos" routerLinkActive="active" class="nav-link">
         <span class="icon">💰</span> Mis Ingresos
+      </a>
+
+      <!-- Ciclo 5 - CU22, CU23, CU25 -->
+      <p class="nav-title">Ciclo 5: Analítica</p>
+      <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
+        <span class="icon">📊</span> Mi Analítica
+      </a>
+      <a routerLink="/calificaciones" routerLinkActive="active" class="nav-link">
+        <span class="icon">⭐</span> Calificaciones
+      </a>
+      <a routerLink="/consejos-viales" routerLinkActive="active" class="nav-link">
+        <span class="icon">🛡️</span> Consejos Viales
       </a>
     </ng-container>
     <ng-container *ngIf="rolUsuario === 'tecnico'">

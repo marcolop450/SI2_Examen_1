@@ -150,4 +150,20 @@ body {
 @media (max-width: 768px) {
   .btn-menu { display: block; }
   .topbar { padding: 0 1rem; }
+
+  /* #Ciclo5 Responsive global fixes */
+  .main-content { overflow-x: hidden; }
+  .layout-principal { flex-direction: column; }
+  .contenido-derecha { padding: 10px !important; }
+
+  /* Fix text overflow on small screens */
+  h1, h2, h3 { word-break: break-word; }
+  pre { overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  table { display: block; overflow-x: auto; }
 }
+
+@media (max-width: 480px) {
+  .topbar { height: 56px; }
+  .topbar h2 { font-size: 1rem; }
+  .user-profile span { display: none; }
+}
