@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router'; // #Ciclo5 CU21 Para enlace a bitácora
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-cu9-monitoreo',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // #Ciclo5 CU21 RouterModule para bitácora
   templateUrl: './cu9-monitoreo.html',
   styleUrls: ['./cu9-monitoreo.css']
 })
@@ -127,6 +128,29 @@ export class Cu9Monitoreo implements OnInit, OnDestroy {
   // =========================================================
   // Métodos de la Interfaz Web
   // =========================================================
+
+  // #Ciclo5 CU9 - Etiqueta legible del estado del incidente
+  getEstadoLabel(estado: string): string {
+    const labels: Record<string, string> = {
+      taller_asignado: '✅ Taller asignado — preparando salida',
+      en_proceso:      '🚗 Técnico en camino',
+      en_camino:       '🚨 En ruta al siniestro',
+      en_atencion:     '🔧 Atendiendo en sitio',
+    };
+    return labels[estado] || estado.replace('_', ' ').toUpperCase();
+  }
+
+  // #Ciclo5 CU9 - Clase CSS del status bar según estado
+  getEstadoClass(estado: string): string {
+    const clases: Record<string, string> = {
+      taller_asignado: 'estado-asignado',
+      en_proceso:      'estado-en-camino',
+      en_camino:       'estado-en-camino',
+      en_atencion:     'estado-atendiendo',
+    };
+    return clases[estado] || 'estado-asignado';
+  }
+
   getMapaUrl(incidente: any): SafeResourceUrl {
     const latCli = incidente.latitud_emergencia;
     const lngCli = incidente.longitud_emergencia;

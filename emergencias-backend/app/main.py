@@ -13,6 +13,9 @@ from app.models import bitacora
 from app.models import taller_rechazo
 from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones, saas
 
+from app.models import calificacion, consejo_vial  # Modelos nuevos - Ciclo 5 - CU23, CU25
+from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones
+from app.routers import bitacora as bitacora_router, kpis, calificaciones, reportes_ia, consejos_viales  # Routers - Ciclo 5
 app = FastAPI(
     title="Plataforma Inteligente de Emergencias Vehiculares",
     description="API REST - Sistema de Información 2 | UAGRM Grupo 30", 
@@ -49,6 +52,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(bitacora_router.router)    # CU21 - Bitácora de Trazabilidad - Ciclo 5
+app.include_router(kpis.router)               # CU22 - Panel de KPIs - Ciclo 5
+app.include_router(calificaciones.router)      # CU23 - Calificaciones Post-Servicio - Ciclo 5
+app.include_router(reportes_ia.router)         # CU24 - Reportes Inteligentes IA - Ciclo 5
+app.include_router(consejos_viales.router)     # CU25 - Consejos Seguridad Vial - Ciclo 5
 # -------------------------------------------------------
 # Endpoint raíz: verifica que el servidor esté corriendo
 # -------------------------------------------------------

@@ -1,22 +1,37 @@
 <ng-container *ngIf="isRutaPublica(); else layoutMaestro">
+<!-- #Ciclo5 CU19 - Layout principal con banner de conectividad PWA -->
+
+<!-- ═══ BANNER OFFLINE - Ciclo 5 - CU19 ═══ -->
+<div class="banner-offline" *ngIf="!online">
+  <span class="banner-icon">📡</span>
+  <div class="banner-texto">
+    <strong>Sin conexión</strong>
+    <span *ngIf="pendientesOffline > 0">
+      — {{ pendientesOffline }} emergencia{{ pendientesOffline > 1 ? 's' : '' }} guardada{{ pendientesOffline > 1 ? 's' : '' }} en cola
+    </span>
+    <span *ngIf="pendientesOffline === 0">— Las funciones básicas siguen disponibles</span>
+  </div>
+</div>
+
+<!-- ═══ BANNER SYNC EXITOSA - Ciclo 5 - CU19 ═══ -->
+<div class="banner-sync-ok" *ngIf="mostrarSyncOk">
+  <span>✅ Conexión restaurada — emergencias sincronizadas</span>
+</div>
+
+<!-- ═══ LAYOUT NORMAL ═══ -->
+<ng-container *ngIf="router.url === '/login'; else layoutMaestro">
   <router-outlet></router-outlet>
 </ng-container>
 
 <ng-template #layoutMaestro>
   <div class="layout-global" [class.sidebar-oculto]="sidebarColapsado">
-    
     <div class="sidebar-overlay" *ngIf="!sidebarColapsado" (click)="toggleSidebar()"></div>
-
     <app-sidebar></app-sidebar>
-
     <div class="columna-derecha">
-      
       <app-navbar (onToggle)="toggleSidebar()"></app-navbar>
-
       <main class="area-trabajo">
         <router-outlet></router-outlet>
       </main>
-
     </div>
   </div>
 </ng-template>

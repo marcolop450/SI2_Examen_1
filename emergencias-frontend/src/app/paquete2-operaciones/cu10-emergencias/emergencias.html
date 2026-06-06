@@ -1,153 +1,109 @@
+<!-- // Pantalla de Emergencias Entrantes - Ciclo 5 - CU10 -->
+<!-- Solo muestra el aviso de la IA. El taller cotiza desde /cotizaciones -->
 <div class="layout-principal">
-
   <div class="contenido-derecha">
     <div class="contenedor-principal">
-      
+
+      <!-- HEADER -->
       <div class="header-seccion">
         <div>
-          <h1 class="titulo-pagina">Emergencias Entrantes</h1>
-          <p class="subtitulo-pagina">Solicitudes cercanas reportadas por los clientes.</p>
+          <h1 class="titulo-pagina">📡 Emergencias Entrantes</h1>
+          <p class="subtitulo-pagina">
+            Notificaciones en tiempo real. Para cotizar ve a
+            <a routerLink="/cotizaciones" class="link-cotizar">Gestión de Cotizaciones →</a>
+          </p>
         </div>
         <button class="btn-refrescar" (click)="cargarPendientes()">🔄 Actualizar</button>
       </div>
 
-      <div *ngIf="cargando" class="estado-vacio">Buscando emergencias en tu zona...</div>
-
-      <div *ngIf="!cargando && emergencias.length === 0" class="estado-vacio">
-        No hay emergencias pendientes en este momento. Tómate un café ☕
+      <!-- CARGANDO -->
+      <div *ngIf="cargando" class="estado-vacio">
+        <div class="spinner"></div>
+        <p>Buscando emergencias en tu zona...</p>
       </div>
 
+      <!-- VACÍO -->
+      <div *ngIf="!cargando && emergencias.length === 0" class="estado-vacio">
+        <span style="font-size:56px">📭</span>
+        <h2>Sin emergencias activas</h2>
+        <p>No hay emergencias pendientes en tu zona en este momento.</p>
+      </div>
+
+      <!-- GRID DE TARJETAS (solo informativo) -->
       <div class="grid-tarjetas" *ngIf="!cargando && emergencias.length > 0">
-        
-        <div class="card-emergencia" *ngFor="let em of emergencias" 
-            [ngClass]="{'tarjeta-prioridad': esMiTurnoPrioritario(em) && !estaExpirado(em)}">
-          
+
+        <div class="card-emergencia" *ngFor="let em of emergencias">
+
+          <!-- HEADER DE TARJETA -->
           <div class="card-header">
-            <span class="badge-prioridad" [ngClass]="'prioridad-' + em.prioridad_enum">
-              {{ em.prioridad_enum | uppercase }}
-            </span>
-            <span class="fecha">{{ em.fecha_creacion_timestamp | date:'shortTime' }}</span>
+            <div class="header-left">
+              <span class="badge-prioridad" [ngClass]="'prioridad-' + em.prioridad_enum">
+                {{ em.prioridad_enum | uppercase }}
+              </span>
+              <span class="badge-estado">🔎 Buscando taller</span>
+            </div>
+            <span class="fecha">{{ em.fecha_creacion_timestamp | date:'HH:mm' }}</span>
           </div>
 
-          <div class="alerta-cronometro" *ngIf="esMiTurnoPrioritario(em) && !estaExpirado(em)">
-            ⏳ ¡URGENCIA! Tienes <strong>{{ tiemposRestantes[em.id_incidente] }}</strong> para aceptar.
-          </div>
-          <div class="alerta-expirado" *ngIf="esMiTurnoPrioritario(em) && estaExpirado(em)">
-            ❌ Tiempo agotado. Buscando otro taller...
+          <!-- DIAGNÓSTICO IA — sección principal -->
+          <div class="card-ia-banner" [ngClass]="getCategoriaClass(em)">
+            <span class="ia-icono">{{ getCategoriaIcono(em) }}</span>
+            <div class="ia-info">
+              <span class="ia-categoria">{{ getCategoriaTexto(em) }}</span>
+              <span class="ia-confianza">Diagnóstico IA</span>
+            </div>
           </div>
 
           <div class="card-body">
-            <h3 class="diagnostico">
-              {{ em.evidencias[0]?.clasificacion_ia_texto || 'Diagnóstico en proceso' | uppercase }}
-            </h3>
-            <p class="descripcion">"{{ em.descripcion_texto || 'Sin descripción del cliente.' }}"</p>
-            
+            <!-- Diagnóstico completo -->
+            <div class="diagnostico-box">
+              <p class="diagnostico-texto">
+                {{ em.evidencias[0]?.clasificacion_ia_texto || 'Diagnóstico en proceso...' }}
+              </p>
+            </div>
+
+            <!-- Descripción del cliente -->
+            <p class="descripcion" *ngIf="em.descripcion_texto">
+              💬 "{{ em.descripcion_texto }}"
+            </p>
+
+            <!-- Ubicación -->
             <div class="ubicacion">
-              <a href="https://www.google.com/maps/search/?api=1&query={{ em.latitud_emergencia }},{{ em.longitud_emergencia }}" 
-                 target="_blank" 
-                 style="color: #E24B4A; text-decoration: none; font-weight: bold;">
+              <a [href]="'https://www.google.com/maps/search/?api=1&query=' + em.latitud_emergencia + ',' + em.longitud_emergencia"
+                 target="_blank" class="link-mapa">
                 🗺️ Ver en Google Maps
               </a>
             </div>
           </div>
 
-          <div class="card-footer" style="display: flex; gap: 5px; flex-wrap: wrap;">
-            
-            <button class="btn-secundario" style="background-color: #0D1B2A; color: white;" (click)="verAnalisisIA(em)">
-              🤖 Ver IA
+          <!-- FOOTER: Solo acciones informativas, sin aceptar/rechazar -->
+          <div class="card-footer">
+            <button class="btn-ia" (click)="verAnalisisIA(em)">
+              🤖 Análisis IA completo
             </button>
-
-            <button class="btn-rechazar" (click)="responder(em, 'rechazar')">Rechazar</button>
-            <button class="btn-secundario"
-                    style="background-color: #854F0B; color: white;"
-                    (click)="abrirModalExcepcion(em)"
-                    *ngIf="esMiTurnoPrioritario(em)">
-              ⚠️ Excepción
-            </button>
-            <button class="btn-aceptar" 
-                    (click)="responder(em, 'aceptar')"
-                    [disabled]="!esMiTurnoPrioritario(em) && !estaExpirado(em)"
-                    [ngClass]="{'btn-parpadeo': esMiTurnoPrioritario(em) && !estaExpirado(em)}">
-              {{ (!esMiTurnoPrioritario(em) && !estaExpirado(em)) ? 'En cola...' : 'ACEPTAR' }}
-            </button>
+            <a class="btn-bitacora" [routerLink]="['/bitacora', em.id_incidente]">
+              📜 Bitácora
+            </a>
+            <a class="btn-cotizar" routerLink="/cotizaciones">
+              💰 Ir a Cotizar
+            </a>
           </div>
-        </div>
 
+        </div>
       </div>
 
     </div>
   </div>
 
-  <div class="modal-overlay" *ngIf="mostrarModal">
-    <div class="modal-container">
-        
-        <div class="modal-header">
-        <h2>Asignar Técnico</h2>
-        <button class="btn-cerrar-modal" (click)="cerrarModal()">✕</button>
-        </div>
-
-        <div class="modal-body">
-        <p class="modal-instruccion">
-            Has aceptado la emergencia de prioridad <strong [ngClass]="'texto-' + incidenteSeleccionado?.prioridad_enum">{{ incidenteSeleccionado?.prioridad_enum | uppercase }}</strong>.<br>
-            Selecciona qué mecánico acudirá a la ubicación:
-        </p>
-
-        <div class="form-grupo">
-            <label for="tecnico">Técnico Disponible:</label>
-            
-            <select id="tecnico" class="form-select" [(ngModel)]="tecnicoSeleccionadoId" [disabled]="tecnicosDisponibles.length === 0">
-            <option [ngValue]="null" disabled selected>-- Seleccione un mecánico --</option>
-            <option *ngFor="let tec of tecnicosDisponibles" [ngValue]="tec.id_tecnico">
-                {{ tec.nombre }} ({{ tec.especialidad || 'General' }})
-            </option>
-            </select>
-
-            <p class="error-texto" *ngIf="tecnicosDisponibles.length === 0">
-            ⚠️ No tienes técnicos disponibles en este momento.
-            </p>
-        </div>
-        </div>
-
-        <div class="modal-footer">
-        <button class="btn-secundario" (click)="cerrarModal()" [disabled]="cargandoAsignacion">Cancelar</button>
-        <button class="btn-primario-modal" (click)="confirmarAsignacion()" [disabled]="!tecnicoSeleccionadoId || cargandoAsignacion">
-            {{ cargandoAsignacion ? 'Asignando...' : 'Confirmar Despacho' }}
-        </button>
-        
-        </div>
-
-    </div>
-  </div>
-  <!-- MODAL CU20 — Excepción Operativa -->
-  <div class="modal-overlay" *ngIf="mostrarModalExcepcion">
-    <div class="modal-container">
+  <!-- MODAL: Ver Análisis IA -->
+  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Reportar Excepción Operativa</h2>
-        <button class="btn-cerrar-modal" (click)="cerrarModalExcepcion()">✕</button>
+        <h2>🤖 Análisis Inteligente</h2>
+        <button class="btn-cerrar-modal" (click)="cerrarModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <p class="modal-instruccion">Seleccioná el motivo de la excepción:</p>
-        <div class="form-grupo">
-          <select class="form-select" [(ngModel)]="tipoExcepcion">
-            <option value="" disabled selected>-- Seleccionar motivo --</option>
-            <option value="cancelacion_cliente">Falla operativa del taller (grúa, técnico)</option>
-            <option value="llego_seguro_primero">No pudimos llegar a tiempo</option>
-          </select>
-          <textarea class="form-control mt-2"
-                    [(ngModel)]="motivoExcepcion"
-                    placeholder="Detalle adicional (opcional)"
-                    rows="3">
-          </textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secundario" (click)="cerrarModalExcepcion()">Cancelar</button>
-        <button class="btn-primario-modal"
-                (click)="confirmarExcepcion()"
-                [disabled]="!tipoExcepcion">
-          Confirmar Excepción
-        </button>
-      </div>
+      <div class="modal-body" [innerHTML]="htmlAnalisis"></div>
     </div>
   </div>
+
 </div>

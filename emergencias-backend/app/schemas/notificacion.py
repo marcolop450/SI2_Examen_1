@@ -13,6 +13,7 @@ from datetime import datetime
 # Respuesta de una notificación individual
 class NotificacionOut(BaseModel):
     id_notificacion:          int
+    usuario_id:               Optional[int] = None   # <--- NUEVO (No rompe código existente)
     titulo:                   str
     mensaje:                  str
     leido_boolean:            bool

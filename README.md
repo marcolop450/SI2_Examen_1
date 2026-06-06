@@ -1,6 +1,6 @@
 # Plataforma Inteligente de Emergencias Vehiculares
 
-Bienvenido al repositorio del proyecto integrador de la materia Sistemas de Informacion 2 en la Universidad Autonoma Gabriel Rene Moreno (UAGRM - FICCT), Grupo 25, Gestion 2026.
+Bienvenido al repositorio del proyecto integrador de la materia Sistemas de Informacion 2 en la Universidad Autonoma Gabriel Rene Moreno (UAGRM - FICCT), Grupo 30, Segundo Parcial, Gestion 2026.
 
 Este sistema conecta a conductores en situacion de emergencia vehicular con talleres mecanicos autorizados, mediante el analisis automatizado de incidentes usando datos multimodales como audio, imagenes y geolocalización. La plataforma integra inteligencia artificial para el diagnostico preliminar y la asignacion eficiente del servicio tecnico en tiempo real.
 
@@ -71,6 +71,20 @@ La aplicacion movil (Flutter) se encuentra en un repositorio separado.
 - CU14 — Administracion de comisiones
 - CU15 — Servicio de notificaciones y comunicacion
 
+### Ciclo 4: SaaS, Resiliencia y Tiempo Real
+- CU16 — Arquitectura Multi-Tenant de Red de Talleres
+- CU17 — Canal de Comunicación en Tiempo Real (WebSocket)
+- CU18 — Cotización y Selección de Taller por Servicio
+- CU19 — Operación Offline y Sincronización (PWA)
+- CU20 — Gestión de Excepciones Operativas
+
+### Ciclo 5: Analítica Avanzada e IA Preventiva
+- CU21 — Bitácora de Trazabilidad del Incidente
+- CU22 — Panel de KPIs y Analítica Operacional
+- CU23 — Calificación y Reputación Post-Servicio
+- CU24 — Reportes Inteligentes por Voz y Texto con IA
+- CU25 — Asistente IA de Seguridad Vial en Espera
+
 ---
 
 ## Equipo de desarrollo
@@ -78,7 +92,8 @@ La aplicacion movil (Flutter) se encuentra en un repositorio separado.
 | Nombre | Registro |
 |---|---|
 | Lopez Velazquez Marco Alejandro | 222008891 |
+| Matienzo Flores Juan Manuel     | 222008970 |
 
 Materia: Sistemas de Informacion 2
 Docente: Ing. Angelica Garzon Cuellar
-Grupo: 25 — Semestre 1, 2026
+Grupo: 30 — Segundo Parcial, Semestre 1, 2026

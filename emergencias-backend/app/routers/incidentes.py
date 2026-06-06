@@ -198,6 +198,9 @@ def actualizar_ubicacion_tecnico(id_incidente: int, datos: UbicacionTecnicoUpdat
 # ===================================================================
 # CU7: REGISTRAR EMERGENCIA — acepta audio, imagen o texto por separado
 # ===================================================================
+# Descripción: Registra una nueva emergencia, con soporte para sincronización offline usando uuid_offline
+# Ciclo: Ciclo 4
+# CU: CU19
 @router.post("/", response_model=IncidenteOut, status_code=status.HTTP_201_CREATED)
 def registrar_emergencia(
     datos: IncidenteCreate,
@@ -212,23 +215,22 @@ def registrar_emergencia(
     if not vehiculo:
         raise HTTPException(status_code=403, detail="Acceso denegado al vehículo.")
 
-    # Buscar el taller más cercano disponible
-    taller, dist = buscar_taller_disponible(db, datos.latitud_emergencia, datos.longitud_emergencia)
-
-    # Verificar uuid_offline para evitar duplicados de sincronización offline
+    # #Ciclo5 CU19 Verificar uuid_offline para evitar duplicados de sincronización offline
     if datos.uuid_offline:
         ya_existe = db.query(Incidente).filter(Incidente.uuid_offline == datos.uuid_offline).first()
         if ya_existe:
-            # Si ya existe devolver el mismo sin duplicar
             return ya_existe
 
+    # #Ciclo5 CAMBIO DE LÓGICA: Ya NO auto-asignamos taller.
+    # El flujo nuevo es: emergencia → notificar talleres → talleres envían cotización → cliente escoge
     nuevo_incidente = Incidente(
         cliente_id=current_user.id_usuario,
         vehiculo_id=datos.vehiculo_id,
-        taller_actual_id=taller.id_taller if taller else None,
+        taller_actual_id=None,  # #Ciclo5 NO asignar taller automáticamente
         latitud_emergencia=datos.latitud_emergencia,
         longitud_emergencia=datos.longitud_emergencia,
         descripcion_texto=datos.descripcion_texto,
+        estado_enum=EstadoIncidente.buscando_taller,  # #Ciclo5 Inicia en buscando_taller
         uuid_offline=datos.uuid_offline  # CU19 — sincronización offline
     )
     db.add(nuevo_incidente)
@@ -285,18 +287,101 @@ def registrar_emergencia(
             transcripcion_audio_texto=transcripcion_guardar
         ))
 
-    # Guardar historial y notificaciones
-    comentario = f"Alerta enviada a Taller ID: {taller.id_taller} ({dist:.2f}km)" if taller else "Buscando taller..."
-    db.add(HistorialEstado(incidente_id=nuevo_incidente.id_incidente, estado_enum=EstadoIncidente.pendiente, comentario_texto=comentario))
-    crear_notificacion_interna(db, current_user.id_usuario, "Emergencia Registrada", "La IA procesó tu caso.")
-    if taller:
-        crear_notificacion_interna(db, taller.dueño_id, "🚨 Nueva Alerta", f"Vehículo a {dist:.2f}km.")
+    # #Ciclo5 EXTRAER CATEGORÍA IA para filtrar por especialidad
+    import re as _re
+    categoria_detectada = "otros"
+    match_cat = _re.search(r'\[(\w+)\]', texto_resumen_seguro or "")
+    if match_cat:
+        categoria_detectada = match_cat.group(1).lower()
+
+    # #Ciclo5 Mapeo categoría IA → palabras clave de especialidad del técnico
+    ESPECIALIDAD_MAP = {
+        "llanta":  ["llant", "llanta", "neumatico", "neumático", "tire"],
+        "motor":   ["mecánico", "mecanico", "motor", "mecanic"],
+        "bateria": ["electric", "eléctric", "bateria", "batería"],
+        "choque":  ["carrocer", "choque", "latonería", "latoneria", "pintura"],
+        "otros":   [],  # cualquier técnico disponible
+    }
+    keywords = ESPECIALIDAD_MAP.get(categoria_detectada, [])
+
+    def taller_tiene_especialista(db, taller_id: int, keywords: list) -> bool:
+        """True si el taller tiene al menos un técnico disponible con la especialidad."""
+        query = db.query(Tecnico).filter(
+            Tecnico.taller_id == taller_id,
+            Tecnico.disponible_boolean == True
+        )
+        tecnicos = query.all()
+        if not tecnicos:
+            return False
+        if not keywords:  # categoría "otros" → cualquier técnico sirve
+            return True
+        for tec in tecnicos:
+            esp = (tec.especialidad or "").lower()
+            if any(kw in esp for kw in keywords):
+                return True
+        return False
+
+    # #Ciclo5 NOTIFICAR TALLERES CERCANOS (radio 5km) CON ESPECIALISTA
+    talleres_todos = db.query(Taller).all()
+    talleres_notificados = 0
+    for t in talleres_todos:
+        d = calcular_distancia(
+            datos.latitud_emergencia, datos.longitud_emergencia,
+            t.latitud_decimal, t.longitud_decimal
+        )
+        if d <= 5.0:
+            if taller_tiene_especialista(db, t.id_taller, keywords):
+                crear_notificacion_interna(
+                    db, t.dueño_id,
+                    f"🚨 Emergencia: {categoria_detectada.upper()} cerca",
+                    f"Vehículo a {d:.1f}km necesita especialista en {categoria_detectada}. ¡Cotiza ahora!"
+                )
+                talleres_notificados += 1
+
+    # Fallback 1: sin especialista cerca → notificar cualquier taller con técnico en 5km
+    if talleres_notificados == 0:
+        for t in talleres_todos:
+            d = calcular_distancia(
+                datos.latitud_emergencia, datos.longitud_emergencia,
+                t.latitud_decimal, t.longitud_decimal
+            )
+            if d <= 5.0 and taller_tiene_especialista(db, t.id_taller, []):
+                crear_notificacion_interna(
+                    db, t.dueño_id,
+                    "🚨 Emergencia Cercana (sin especialista)",
+                    f"Vehículo a {d:.1f}km. Categoría: {categoria_detectada}. ¡Puedes cotizar igual!"
+                )
+                talleres_notificados += 1
+
+    # Fallback 2: ningún taller en 5km → ampliar a TODOS con especialista
+    if talleres_notificados == 0:
+        for t in talleres_todos:
+            if taller_tiene_especialista(db, t.id_taller, keywords):
+                crear_notificacion_interna(
+                    db, t.dueño_id,
+                    f"🚨 Emergencia {categoria_detectada.upper()} (zona ampliada)",
+                    f"No hay talleres cerca. Categoría: {categoria_detectada}. ¡Cotiza!"
+                )
+                talleres_notificados += 1
+
+    # Guardar historial
+    comentario = f"Emergencia publicada. Categoría IA: {categoria_detectada}. {talleres_notificados} talleres notificados."
+    db.add(HistorialEstado(
+        incidente_id=nuevo_incidente.id_incidente,
+        estado_enum=EstadoIncidente.buscando_taller,
+        comentario_texto=comentario
+    ))
+    crear_notificacion_interna(
+        db, current_user.id_usuario,
+        "Emergencia Registrada",
+        f"IA detectó: {categoria_detectada}. {talleres_notificados} talleres con especialista notificados."
+    )
 
     # CU21 — registrar creación en bitácora
     registrar_evento(
         db, nuevo_incidente.id_incidente,
         "CREACION",
-        f"Emergencia registrada. Prioridad IA: {prioridad_ia}. Taller asignado: {taller.id_taller if taller else 'Ninguno'}",
+        f"Emergencia registrada. Categoría IA: {categoria_detectada}. Prioridad: {prioridad_ia}. {talleres_notificados} talleres notificados.",
         current_user.id_usuario
     )
 
@@ -304,8 +389,11 @@ def registrar_emergencia(
     db.refresh(nuevo_incidente)
     return nuevo_incidente
 
+
 # ===================================================================
-# CU10: LISTAR EMERGENCIAS PENDIENTES (para el taller en Angular)
+# CU10: LISTAR EMERGENCIAS DISPONIBLES PARA COTIZAR
+# #Ciclo5 CAMBIO: Ahora muestra TODOS los incidentes en buscando_taller
+# a todos los talleres (excluyendo rechazados y ya cotizados)
 # ===================================================================
 @router.get("/pendientes", response_model=List[IncidenteOut])
 def listar_solicitudes_pendientes(
@@ -313,11 +401,19 @@ def listar_solicitudes_pendientes(
     current_user: Usuario = Depends(get_current_user),
     tenant_id: Optional[UUID] = Depends(get_current_tenant)
 ):
+    # Si es admin devuelve todos los pendientes y buscando_taller
+    if current_user.rol.value == "admin":
+        return db.query(Incidente).filter(
+            Incidente.estado_enum.in_([
+                EstadoIncidente.pendiente,
+                EstadoIncidente.buscando_taller
+            ])
+        ).all()
+
     # Buscar el taller del usuario autenticado
     taller = db.query(Taller).filter(
         Taller.dueño_id == current_user.id_usuario
     ).first()
-
     if not taller:
         # Si es admin devuelve todos
         if current_user.rol.value == "admin":
@@ -329,7 +425,7 @@ def listar_solicitudes_pendientes(
             return query.all()
         return []
 
-    # Obtener IDs de incidentes que este taller ya rechazó
+    # #Ciclo5 Obtener IDs de incidentes que este taller ya rechazó
     rechazados = db.query(TallerRechazo.incidente_id).filter(
         TallerRechazo.taller_id == taller.id_taller
     ).all()
@@ -344,8 +440,27 @@ def listar_solicitudes_pendientes(
     if tenant_id is not None:
         query = query.filter(Incidente.tenant_id == tenant_id)
     return query.all()
+    # #Ciclo5 Obtener incidentes ya cotizados por este taller (para no mostrar de nuevo)
+    from app.models.cotizacion import Cotizacion
+    ya_cotizados = db.query(Cotizacion.incidente_id).filter(
+        Cotizacion.taller_id == taller.id_taller
+    ).all()
+    ids_ya_cotizados = [c[0] for c in ya_cotizados]
+
+    # #Ciclo5 NUEVO: Mostrar TODOS los incidentes en buscando_taller
+    # que no hayan sido rechazados ni ya cotizados por este taller
+    return db.query(Incidente).filter(
+        Incidente.estado_enum.in_([
+            EstadoIncidente.pendiente,
+            EstadoIncidente.buscando_taller
+        ]),
+        Incidente.id_incidente.notin_(ids_rechazados),
+        Incidente.id_incidente.notin_(ids_ya_cotizados)
+    ).all()
 # ===================================================================
-# CU10: ACEPTAR O RECHAZAR SOLICITUD (taller responde)
+# CU10: ACEPTAR O RECHAZAR SOLICITUD (taller responde en web)
+# #Ciclo5 NOTA: En el flujo nuevo, el taller usa cotizaciones (CU18).
+# Este endpoint sigue disponible para compatibilidad con la web Angular.
 # ===================================================================
 @router.post("/{id_incidente}/accion")
 def responder_solicitud(
@@ -355,15 +470,24 @@ def responder_solicitud(
     current_user: Usuario = Depends(get_current_user)
 ):
     incidente = db.query(Incidente).filter(Incidente.id_incidente == id_incidente).first()
-    if not incidente or incidente.estado_enum != EstadoIncidente.pendiente:
+    # #Ciclo5 Aceptar tanto pendiente como buscando_taller
+    estados_validos = [EstadoIncidente.pendiente, EstadoIncidente.buscando_taller]
+    if not incidente or incidente.estado_enum not in estados_validos:
         raise HTTPException(status_code=400, detail="El incidente ya no está disponible.")
+
+    # Verificar que el taller que responde es el asignado (si hay uno asignado)
+    taller_usuario = db.query(Taller).filter(
+        Taller.dueño_id == current_user.id_usuario
+    ).first()
 
     if datos.accion == "aceptar":
         incidente.estado_enum = EstadoIncidente.en_proceso
+        if taller_usuario:
+            incidente.taller_actual_id = taller_usuario.id_taller
         db.add(HistorialEstado(
             incidente_id=id_incidente,
             estado_enum=EstadoIncidente.en_proceso,
-            comentario_texto="Solicitud aceptada por el Taller."
+            comentario_texto="Solicitud aceptada directamente por el Taller (web)."
         ))
         crear_notificacion_interna(db, incidente.cliente_id, "¡Auxilio en camino!", "Tu solicitud ha sido aceptada.")
         # CU21 — registrar aceptación en bitácora
@@ -375,29 +499,18 @@ def responder_solicitud(
         )
 
     elif datos.accion == "rechazar":
-        db.add(TallerRechazo(
+        if taller_usuario:
+            db.add(TallerRechazo(
+                incidente_id=id_incidente,
+                taller_id=taller_usuario.id_taller,
+                motivo=datos.comentario or "Sin motivo."
+            ))
+        # #Ciclo5 Mantener en buscando_taller para que otros talleres sigan cotizando
+        db.add(HistorialEstado(
             incidente_id=id_incidente,
-            taller_id=incidente.taller_actual_id,
-            motivo=datos.comentario or "Sin motivo."
+            estado_enum=EstadoIncidente.buscando_taller,
+            comentario_texto=f"Taller rechazó. Siguiendo en búsqueda de talleres."
         ))
-        db.flush()
-        nuevo_taller, dist = buscar_taller_disponible(db, incidente.latitud_emergencia, incidente.longitud_emergencia, id_incidente)
-        if nuevo_taller:
-            incidente.taller_actual_id = nuevo_taller.id_taller
-            incidente.fecha_creacion_timestamp = datetime.now()
-            db.add(HistorialEstado(
-                incidente_id=id_incidente,
-                estado_enum=EstadoIncidente.pendiente,
-                comentario_texto=f"Reasignado a Taller ID: {nuevo_taller.id_taller}"
-            ))
-            crear_notificacion_interna(db, nuevo_taller.dueño_id, "🚨 Emergencia Derivada", f"Un incidente a {dist:.2f}km derivado a tu taller.")
-        else:
-            incidente.taller_actual_id = None
-            db.add(HistorialEstado(
-                incidente_id=id_incidente,
-                estado_enum=EstadoIncidente.pendiente,
-                comentario_texto="Rechazado. No hay más talleres disponibles en la zona."
-            ))
         # CU21 — registrar rechazo en bitácora
         registrar_evento(
             db, id_incidente,
@@ -408,6 +521,8 @@ def responder_solicitud(
 
     db.commit()
     return {"status": "ok"}
+
+
 
 # ===================================================================
 # CU11: ASIGNAR TÉCNICO AL INCIDENTE
@@ -447,6 +562,132 @@ def asignar_tecnico(
     db.commit()
     return {"message": "Técnico asignado exitosamente."}
 
+
+# ===================================================================
+# CU12: VER MI TRABAJO ASIGNADO (técnico móvil Flutter)
+# #Ciclo5 - El técnico ve el incidente que le fue asignado
+# ===================================================================
+@router.get("/mis-trabajos", response_model=List[IncidenteOut])
+def mis_trabajos_tecnico(
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    El técnico móvil llama este endpoint para obtener el incidente
+    que le fue asignado. Solo muestra incidentes activos (no finalizados).
+    El técnico debe conectarse a WS /ws/incidente/{id} para recibir
+    actualizaciones en tiempo real.
+    """
+    # Buscar el registro del técnico por su usuario
+    tecnico = db.query(Tecnico).filter(
+        Tecnico.usuario_id == current_user.id_usuario
+    ).first()
+
+    # Fallback: buscar por nombre si no hay usuario_id
+    if not tecnico:
+        tecnico = db.query(Tecnico).filter(
+            Tecnico.nombre.ilike(f"%{current_user.nombre}%")
+        ).first()
+
+    if not tecnico:
+        return []
+
+    # Estados activos que el técnico debe ver
+    estados_activos = [
+        EstadoIncidente.taller_asignado,
+        EstadoIncidente.en_proceso,
+        EstadoIncidente.en_camino,
+        EstadoIncidente.en_atencion,
+    ]
+
+    incidentes = db.query(Incidente).filter(
+        Incidente.tecnico_id == tecnico.id_tecnico,
+        Incidente.estado_enum.in_(estados_activos)
+    ).order_by(Incidente.fecha_creacion_timestamp.desc()).all()
+
+    # Enriquecer con datos del técnico y precio de cotización aceptada
+    from app.models.cotizacion import Cotizacion
+    resultado = []
+    for inc in incidentes:
+        inc_out = IncidenteOut.model_validate(inc)
+        inc_out.nombre_tecnico = tecnico.nombre
+        inc_out.especialidad_tecnico = tecnico.especialidad or "General"
+
+        # #Ciclo5 - Buscar precio de la cotización aceptada para este incidente
+        cot_aceptada = db.query(Cotizacion).filter(
+            Cotizacion.incidente_id == inc.id_incidente,
+            Cotizacion.estado == "aceptada"
+        ).first()
+        if cot_aceptada:
+            inc_out.precio_cotizacion = float(cot_aceptada.precio_estimado)
+
+        resultado.append(inc_out)
+
+    return resultado
+
+
+# ===================================================================
+# CU17: ACTUALIZAR UBICACIÓN DEL TÉCNICO VÍA REST
+# #Ciclo5 - Alternativa REST al WebSocket para enviar GPS
+#           El backend reenvía la ubicación por WS a todos en la sala
+# ===================================================================
+# Descripción: Actualiza la ubicación en tiempo real del técnico asignado a un incidente
+# Ciclo: Ciclo 4
+# CU: CU17
+@router.put("/{id_incidente}/ubicacion-tecnico", status_code=200)
+async def actualizar_ubicacion_tecnico(
+    id_incidente: int,
+    datos: dict,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    El técnico móvil envía su GPS periódicamente.
+    El backend guarda la ubicación en el incidente y la retransmite
+    por WebSocket como mensaje tipo 'ubicacion_tecnico' a todos
+    los conectados (cliente y monitoreo web).
+
+    Body: { "latitud": -17.783, "longitud": -63.182, "eta_minutos": 5 }
+    """
+    incidente = db.query(Incidente).filter(
+        Incidente.id_incidente == id_incidente
+    ).first()
+    if not incidente:
+        raise HTTPException(status_code=404, detail="Incidente no encontrado.")
+
+    lat = datos.get("latitud")
+    lng = datos.get("longitud")
+    eta = datos.get("eta_minutos", 0)
+
+    if lat is None or lng is None:
+        raise HTTPException(status_code=400, detail="Latitud y longitud son requeridas.")
+
+    # #Ciclo5 CU17 - Guardar en BD y retransmitir por WS
+    incidente.latitud_tecnico  = lat
+    incidente.longitud_tecnico = lng
+
+    # Guardar punto en ruta del técnico
+    try:
+        from app.models.ruta_tecnico import RutaTecnico
+        punto = RutaTecnico(incidente_id=id_incidente, latitud=lat, longitud=lng)
+        db.add(punto)
+    except Exception:
+        pass  # Si no existe el modelo, ignorar
+
+    db.commit()
+
+    # Retransmitir por WebSocket a todos en la sala del incidente
+    from app.routers.websocket_incidente import gestor
+    await gestor.broadcast(id_incidente, {
+        "tipo": "ubicacion_tecnico",
+        "latitud": lat,
+        "longitud": lng,
+        "eta_minutos": eta,
+        "timestamp": datetime.utcnow().isoformat()
+    })
+
+    return {"ok": True, "latitud": lat, "longitud": lng, "eta_minutos": eta}
+
 # ===================================================================
 # CU12: LISTAR INCIDENTES EN PROCESO (para el técnico en Flutter)
 # ===================================================================
@@ -459,6 +700,43 @@ def listar_solicitudes_en_proceso(
     if tenant_id is not None:
         query = query.filter(Incidente.tenant_id == tenant_id)
     return query.all()
+    current_user: Usuario = Depends(get_current_user)
+):
+    # #Ciclo5 - Incluir taller_asignado y estados activos para que el monitoreo
+    # muestre el incidente desde que el cliente acepta una cotización
+    estados_activos = [
+        EstadoIncidente.taller_asignado,
+        EstadoIncidente.en_proceso,
+        EstadoIncidente.en_camino,
+        EstadoIncidente.en_atencion,
+    ]
+    query = db.query(Incidente).filter(Incidente.estado_enum.in_(estados_activos))
+
+    # Si es taller, filtrar solo sus incidentes
+    if current_user.rol.value != "admin":
+        taller = db.query(Taller).filter(
+            Taller.dueño_id == current_user.id_usuario
+        ).first()
+        if taller:
+            query = query.filter(Incidente.taller_actual_id == taller.id_taller)
+        else:
+            return []
+
+    incidentes = query.order_by(Incidente.fecha_creacion_timestamp.desc()).all()
+
+    # #Ciclo5 CU18 - Enriquecer con nombre y especialidad del técnico
+    resultado = []
+    for inc in incidentes:
+        inc_dict = IncidenteOut.model_validate(inc)
+        if inc.tecnico_id:
+            tec = db.query(Tecnico).filter(Tecnico.id_tecnico == inc.tecnico_id).first()
+            if tec:
+                inc_dict.nombre_tecnico = tec.nombre
+                inc_dict.especialidad_tecnico = tec.especialidad or "General"
+        resultado.append(inc_dict)
+
+    return resultado
+
 
 # ===================================================================
 # CU12: ACTUALIZAR ESTADO DEL SERVICIO (técnico finaliza o avanza)
@@ -519,6 +797,9 @@ class ExcepcionCreate(BaseModel):
     motivo: Optional[str] = None
     compensacion_taller: Optional[float] = 0.00
 
+# Descripción: Registra una excepción operativa (falsa alarma, cliente no encontrado, falla de herramienta)
+# Ciclo: Ciclo 4
+# CU: CU20
 @router.post("/{id_incidente}/excepcion")
 def registrar_excepcion(
     id_incidente: int,
@@ -669,26 +950,50 @@ def monitorear_auxilio(
     if not incidente:
         raise HTTPException(status_code=404, detail="Incidente no encontrado")
 
+    # #Ciclo5 - Buscar precio de la cotización aceptada
+    from app.models.cotizacion import Cotizacion
+    cot_aceptada = db.query(Cotizacion).filter(
+        Cotizacion.incidente_id == id_incidente,
+        Cotizacion.estado == "aceptada"
+    ).first()
+
     respuesta = {
         "id_incidente": incidente.id_incidente,
         "estado_actual": incidente.estado_enum.value,
         "prioridad": incidente.prioridad_enum.value,
+        "latitud_emergencia": float(incidente.latitud_emergencia) if incidente.latitud_emergencia else None,
+        "longitud_emergencia": float(incidente.longitud_emergencia) if incidente.longitud_emergencia else None,
         "latitud_tecnico": float(incidente.latitud_tecnico) if incidente.latitud_tecnico else None,
         "longitud_tecnico": float(incidente.longitud_tecnico) if incidente.longitud_tecnico else None,
         "costo_final_decimal": float(incidente.costo_final_decimal) if incidente.costo_final_decimal else 0.0,
+        "precio_cotizacion": float(cot_aceptada.precio_estimado) if cot_aceptada else None,
+        "precio_cotizacion_aceptada": float(cot_aceptada.precio_estimado) if cot_aceptada else None,
+        "descripcion_texto": incidente.descripcion_texto,
+        "nombre_taller": None,
         "tecnico_asignado": None,
         "taller_responsable": None
     }
+
+    # Obtener nombre del taller asignado
+    if incidente.taller_actual_id:
+        taller_asig = db.query(Taller).filter(Taller.id_taller == incidente.taller_actual_id).first()
+        if taller_asig:
+            respuesta["nombre_taller"] = taller_asig.nombre
+            respuesta["taller_responsable"] = taller_asig.nombre
 
     if incidente.tecnico_id:
         tecnico = db.query(Tecnico).filter(Tecnico.id_tecnico == incidente.tecnico_id).first()
         if tecnico:
             respuesta["tecnico_asignado"] = {"nombre": tecnico.nombre, "especialidad": tecnico.especialidad}
-            taller = db.query(Taller).filter(Taller.id_taller == tecnico.taller_id).first()
-            if taller:
-                respuesta["taller_responsable"] = taller.nombre
+            # Fallback: si no se llenó nombre_taller arriba, usar el taller del técnico
+            if not respuesta["nombre_taller"]:
+                taller = db.query(Taller).filter(Taller.id_taller == tecnico.taller_id).first()
+                if taller:
+                    respuesta["nombre_taller"] = taller.nombre
+                    respuesta["taller_responsable"] = taller.nombre
 
     return respuesta
+
 
 # ===================================================================
 # CU9: RECUPERAR EMERGENCIA ACTIVA DEL CLIENTE TRAS CERRAR SESIÓN
@@ -748,3 +1053,4 @@ def obtener_historial_tecnico(
             "vehiculo_modelo":         f"{vehiculo.marca} {vehiculo.modelo}" if vehiculo else "Sin registrar"
         })
     return resultado
+

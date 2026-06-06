@@ -1,0 +1,88 @@
+/* Estilos de Consejos de Seguridad Vial - Ciclo 5 - CU25 */
+.consejos-container { padding: 1.5rem; }
+.consejos-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+.consejos-header h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0; }
+.consejos-header .subtitle { font-size: 0.85rem; color: #64748b; margin: 4px 0 0; }
+
+.btn-nuevo {
+  padding: 8px 18px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white;
+  font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;
+}
+.btn-nuevo:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.3); }
+
+/* Form card - Ciclo 5 - CU25 */
+.form-card {
+  background: white; border-radius: 14px; padding: 1.5rem;
+  border: 1px solid #e2e8f0; margin: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.form-card h3 { margin: 0 0 1rem; font-size: 1rem; color: #0f172a; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; }
+.form-input, .form-select, .form-textarea {
+  border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.875rem; transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; }
+.form-textarea { resize: vertical; }
+.btn-guardar {
+  margin-top: 1rem; padding: 10px 24px; background: #22c55e; color: white;
+  border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-guardar:hover { background: #16a34a; }
+
+/* Category pills - Ciclo 5 - CU25 */
+.categorias-row { display: flex; gap: 0.5rem; margin: 1.5rem 0; overflow-x: auto; padding-bottom: 4px; }
+.cat-pill {
+  display: flex; align-items: center; gap: 5px; padding: 7px 16px;
+  border-radius: 20px; border: 1px solid #e2e8f0; background: white;
+  color: #475569; font-size: 0.8rem; font-weight: 500; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.cat-pill:hover { background: #f8fafc; }
+.cat-pill.active { background: #2563eb; color: white; border-color: #2563eb; }
+.cat-emoji { font-size: 1rem; }
+
+/* Loading y empty - Ciclo 5 - CU25 */
+.loading-container { text-align: center; padding: 4rem; color: #64748b; }
+.spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { text-align: center; padding: 3rem; color: #64748b; }
+.empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+/* Consejos Grid - Ciclo 5 - CU25 */
+.consejos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.consejo-card {
+  background: white; border-radius: 14px; padding: 1.3rem;
+  border: 1px solid #e2e8f0; border-top: 4px solid;
+  transition: all 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.consejo-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+.consejo-icono { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.consejo-categoria {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 0.5rem;
+}
+.consejo-titulo { font-size: 1rem; font-weight: 700; color: #0f172a; margin: 0.3rem 0; }
+.consejo-contenido { font-size: 0.85rem; color: #475569; line-height: 1.5; margin: 0; }
+
+.consejo-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.btn-edit, .btn-delete {
+  padding: 5px 10px; border-radius: 6px; border: 1px solid #e2e8f0;
+  background: white; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-edit:hover { background: #dbeafe; border-color: #93c5fd; }
+.btn-delete:hover { background: #fef2f2; border-color: #fca5a5; }
+
+/* Responsive - Ciclo 5 - CU25 */
+@media (max-width: 1024px) { .consejos-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  .consejos-grid { grid-template-columns: 1fr; }
+  .consejos-container { padding: 1rem; }
+  .form-grid { grid-template-columns: 1fr; }
+}

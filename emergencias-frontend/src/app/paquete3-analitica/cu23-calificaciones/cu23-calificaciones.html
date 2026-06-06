@@ -1,0 +1,62 @@
+<!-- Template de Calificaciones y Reputación - Ciclo 5 - CU23 -->
+<div class="calificaciones-container">
+  <div class="cal-header">
+    <h1>⭐ Calificaciones y Reputación</h1>
+    <p class="subtitle">Reseñas de tus clientes sobre el servicio</p>
+  </div>
+
+  <!-- Loading - Ciclo 5 - CU23 -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando calificaciones...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Resumen de promedio - Ciclo 5 - CU23 -->
+    <div class="promedio-card">
+      <div class="promedio-main">
+        <span class="promedio-numero">{{ promedio.promedio | number:'1.1-1' }}</span>
+        <div class="promedio-stars">
+          <span *ngFor="let s of getEstrellas(promedio.promedio)" class="star filled">★</span>
+          <span *ngFor="let s of getEstrellasVacias(promedio.promedio)" class="star empty">★</span>
+        </div>
+        <span class="promedio-total">{{ promedio.total_calificaciones }} reseñas</span>
+      </div>
+      <div class="promedio-distribucion">
+        <div class="dist-row" *ngFor="let p of [5,4,3,2,1]">
+          <span class="dist-label">{{ p }}★</span>
+          <div class="dist-bar-bg">
+            <div class="dist-bar-fill" [style.width.%]="getPorcentaje(p)"></div>
+          </div>
+          <span class="dist-count">{{ getConteo(p) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state - Ciclo 5 - CU23 -->
+    <div class="empty-state" *ngIf="calificaciones.length === 0">
+      <span class="empty-icon">📭</span>
+      <h3>Sin calificaciones aún</h3>
+      <p>Las reseñas aparecerán cuando los clientes califiquen tu servicio.</p>
+    </div>
+
+    <!-- Lista de reseñas - Ciclo 5 - CU23 -->
+    <div class="reviews-grid" *ngIf="calificaciones.length > 0">
+      <div class="review-card" *ngFor="let c of calificaciones" [style.border-left-color]="getBorderColor(c.puntuacion)">
+        <div class="review-header">
+          <div class="review-avatar" [style.background]="getBorderColor(c.puntuacion)">{{ getInicial(c.cliente_nombre) }}</div>
+          <div class="review-info">
+            <span class="review-name">{{ c.cliente_nombre || 'Cliente' }}</span>
+            <span class="review-fecha">{{ formatFecha(c.fecha_calificacion) }}</span>
+          </div>
+          <div class="review-stars">
+            <span *ngFor="let s of getEstrellas(c.puntuacion)" class="star filled">★</span>
+            <span *ngFor="let s of getEstrellasVacias(c.puntuacion)" class="star empty">★</span>
+          </div>
+        </div>
+        <p class="review-comment">{{ c.comentario || 'Sin comentario' }}</p>
+        <span class="review-incidente">Incidente #{{ c.incidente_id }}</span>
+      </div>
+    </div>
+  </div>
+</div>

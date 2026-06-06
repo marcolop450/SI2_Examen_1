@@ -12,6 +12,13 @@ import { Cu4Perfil } from './paquete1-gestion/cu4-perfil/cu4-perfil';
 import { HistorialTecnico } from './paquete2-operaciones/historial-tecnico/historial-tecnico';
 import { UbicacionComponent } from './paquete2-operaciones/ubicacion/ubicacion';
 import { Cu18Cotizaciones } from './paquete1-arquitectura/cu18-cotizaciones/cu18-cotizaciones';
+// #Ciclo5 CU21 Bitácora en Paquete 2: Resiliencia Operativa
+import { Cu21BitacoraComponent } from './paquete2-operaciones/cu21-bitacora/cu21-bitacora';
+// #Ciclo5 CU22-CU25 en Paquete 3: Analítica Avanzada e IA Preventiva
+import { Cu22KpisComponent } from './paquete3-analitica/cu22-kpis/cu22-kpis';
+import { Cu23CalificacionesComponent } from './paquete3-analitica/cu23-calificaciones/cu23-calificaciones';
+import { Cu24ReportesIaComponent } from './paquete3-analitica/cu24-reportes-ia/cu24-reportes-ia';
+import { Cu25ConsejosVialesComponent } from './paquete3-analitica/cu25-consejos-viales/cu25-consejos-viales';
 
 // --- IMPORTS CU16 MULTI-TENANT ---
 import { LandingPlanesComponent } from './paquete6-multitenant/cu16-red-talleres/landing-planes/landing-planes';
@@ -42,5 +49,12 @@ export const routes: Routes = [
 
   // --- COMODINES (siempre al final) ---
   { path: '', component: LandingPlanesComponent, pathMatch: 'full' },
+  // Rutas del Ciclo 5 - CU21 a CU25
+  { path: 'bitacora/:id', component: Cu21BitacoraComponent },        // Bitácora de Trazabilidad - Ciclo 5 - CU21
+  { path: 'kpis', component: Cu22KpisComponent },                    // Panel de KPIs - Ciclo 5 - CU22
+  { path: 'calificaciones', component: Cu23CalificacionesComponent }, // Calificaciones - Ciclo 5 - CU23
+  { path: 'reportes-ia', component: Cu24ReportesIaComponent },        // Reportes IA - Ciclo 5 - CU24
+  { path: 'consejos-viales', component: Cu25ConsejosVialesComponent },// Consejos Viales - Ciclo 5 - CU25
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

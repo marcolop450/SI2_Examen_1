@@ -1,0 +1,146 @@
+<!-- // Reportes Inteligentes - Ciclo 5 - CU24 -->
+<!-- Voz → Whisper transcribe → keywords detectan tipo → tabla de datos reales -->
+<div class="reportes-container">
+
+  <!-- HEADER -->
+  <div class="reportes-header">
+    <div>
+      <h1 class="titulo-pagina">📊 Reportes</h1>
+      <p class="subtitulo-pagina">
+        Escribe o di: <em>"Talleres de hoy"</em>, <em>"Comisiones del mes"</em>, <em>"Técnicos disponibles"</em>…
+      </p>
+    </div>
+    <div class="header-badges" *ngIf="reporte">
+      <span class="badge-tipo">{{ TITULOS[getTipo()] }}</span>
+      <span class="badge-periodo">📅 {{ reporte.datos_periodo?.['fecha_inicio'] }} → {{ reporte.datos_periodo?.['fecha_fin'] }}</span>
+    </div>
+  </div>
+
+  <!-- PANEL DE ENTRADA -->
+  <div class="input-card">
+    <label class="form-label">¿Qué reporte necesitas?</label>
+    <div class="prompt-row">
+      <textarea class="input-textarea"
+                [(ngModel)]="prompt"
+                placeholder='Ej: "Reportes de talleres de hoy" — "Comisiones del mes" — "Técnicos disponibles"'
+                rows="2"
+                (keydown.enter)="$event.preventDefault(); generarReporte()">
+      </textarea>
+    </div>
+
+    <!-- Chips de sugerencias -->
+    <div class="sugerencias-row">
+      <button class="chip" *ngFor="let s of sugerencias" (click)="usarSugerencia(s)">{{ s }}</button>
+    </div>
+
+    <!-- Botones -->
+    <div class="actions-row">
+      <button class="btn-generar" id="btn-generar-reporte"
+              (click)="generarReporte()" [disabled]="isLoading || !prompt.trim()">
+        <svg *ngIf="!isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="spinner" *ngIf="isLoading"></span>
+        {{ isLoading ? 'Buscando...' : 'Buscar' }}
+      </button>
+      <button class="btn-mic" id="btn-mic-reporte"
+              [class.recording]="isRecording"
+              (click)="toggleGrabacion()" [disabled]="isLoading">
+        {{ isRecording ? '⏹ Detener' : '🎙️ Hablar' }}
+      </button>
+    </div>
+
+    <!-- Transcripción detectada -->
+    <div class="transcripcion-box" *ngIf="reporte && reporte.prompt_procesado && !isLoading">
+      <span class="trans-label">🎯 Búsqueda interpretada:</span>
+      <span class="trans-texto">"{{ reporte.prompt_procesado }}"</span>
+      <span class="trans-tipo">→ {{ TITULOS[getTipo()] }}</span>
+    </div>
+
+    <p class="error-msg" *ngIf="errorMsg">⚠️ {{ errorMsg }}</p>
+  </div>
+
+  <!-- CARGANDO -->
+  <div class="skeleton-card" *ngIf="isLoading">
+    <div class="skeleton-header">🔍 <span>Buscando datos en la base de datos...</span></div>
+    <div class="skeleton-line w80"></div>
+    <div class="skeleton-line w60"></div>
+    <div class="skeleton-line w90"></div>
+    <div class="skeleton-line w70"></div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="result-section" *ngIf="reporte && !isLoading">
+
+    <!-- KPIs según tipo -->
+    <div class="stats-panel" *ngIf="getStatsRapidas().length">
+      <div class="stat-card" [ngClass]="'color-' + s.color" *ngFor="let s of getStatsRapidas()">
+        <span class="stat-value">{{ s.valor }}</span>
+        <span class="stat-label">{{ s.label }}</span>
+      </div>
+    </div>
+
+    <!-- Sin datos -->
+    <div class="sin-resultados" *ngIf="!getColumnas().length && getTipo() !== 'general'">
+      <span>📭</span>
+      <p>No hay datos de <strong>{{ TITULOS[getTipo()] }}</strong> para el período seleccionado.</p>
+    </div>
+
+    <!-- BARRA ACCIONES + FILTRO -->
+    <div class="acciones-bar" *ngIf="getColumnas().length">
+      <div class="filtro-wrapper">
+        <svg class="filtro-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="filtro-input" id="filtro-tabla-reporte"
+               [(ngModel)]="filtroTexto"
+               placeholder="Filtrar resultados...">
+      </div>
+      <div class="export-btns">
+        <button class="btn-excel" id="btn-export-excel" (click)="exportarExcel()">
+          📊 Excel
+        </button>
+        <button class="btn-pdf" id="btn-export-pdf" (click)="exportarPDF()">
+          📄 PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLA REAL -->
+    <div class="tabla-wrapper" *ngIf="getColumnas().length">
+      <table class="tabla-reporte">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th *ngFor="let col of getColumnas()">{{ getHeaderLabel(col) }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of getFilas(); let i = index">
+            <td class="td-num">{{ i + 1 }}</td>
+            <td *ngFor="let col of getColumnas()"
+                [class.td-right]="esNumero(fila[col])"
+                [class.td-estado]="col === 'estado' || col === 'disponible'">
+              <span *ngIf="col === 'estado' || col === 'disponible'"
+                    class="estado-badge"
+                    [class.badge-ok]="fila[col] === 'Disponible'"
+                    [class.badge-busy]="fila[col] === 'Ocupado'">
+                {{ fila[col] ?? '—' }}
+              </span>
+              <span *ngIf="col !== 'estado' && col !== 'disponible'">
+                {{ fila[col] ?? '—' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="getFilas().length === 0">
+            <td [colSpan]="getColumnas().length + 1" class="sin-datos">
+              Sin registros para este período.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tabla-footer">
+        <span>{{ getFilas().length }} registros</span>
+        <span>{{ reporte.datos_periodo?.['fecha_inicio'] }} al {{ reporte.datos_periodo?.['fecha_fin'] }}</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>

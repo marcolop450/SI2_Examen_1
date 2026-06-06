@@ -1,0 +1,150 @@
+/* #Ciclo5 CU22 Estilos del Panel de KPIs - Dashboard completo según enunciado */
+.kpis-container { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
+.kpis-header h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0; }
+.kpis-header .subtitle { font-size: 0.82rem; color: #64748b; margin: 4px 0 0; }
+
+/* Loading */
+.loading-container { text-align: center; padding: 4rem; color: #64748b; }
+.spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* #Ciclo5 CU22 Secciones */
+.section-title {
+  font-size: 1rem; font-weight: 700; color: #0f172a; margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0;
+}
+
+/* #Ciclo5 CU22 KPI Cards Grid (6 cards) */
+.kpi-cards-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.8rem; margin: 1.5rem 0;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.kpi-card {
+  background: white; border-radius: 14px; padding: 1rem; text-align: center;
+  border: 1px solid #e2e8f0; transition: all 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.kpi-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.kpi-value { font-size: 1.4rem; font-weight: 800; display: block; line-height: 1.2; }
+.kpi-label { font-size: 0.65rem; color: #64748b; display: block; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.kpi-card.blue .kpi-value { color: #2563eb; }
+.kpi-card.green .kpi-value { color: #16a34a; }
+.kpi-card.orange .kpi-value { color: #ea580c; }
+.kpi-card.purple .kpi-value { color: #7c3aed; }
+.kpi-card.emerald .kpi-value { color: #059669; }
+.kpi-card.gold .kpi-value { color: #ca8a04; }
+
+/* #Ciclo5 CU22 Tiempos Grid */
+.tiempos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.tiempo-card {
+  background: white; border-radius: 14px; padding: 1.2rem;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.tiempo-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; }
+.tiempo-header h3 { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin: 0; }
+.tiempo-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.tiempo-icon.blue-bg { background: #dbeafe; }
+.tiempo-icon.green-bg { background: #dcfce7; }
+.tiempo-icon.purple-bg { background: #f3e8ff; }
+.tiempo-desc { font-size: 0.75rem; color: #94a3b8; margin: 0 0 0.8rem; }
+.tiempo-value { font-size: 2rem; font-weight: 800; color: #0f172a; }
+.tiempo-value small { font-size: 0.9rem; color: #64748b; font-weight: 500; }
+.tiempo-meta { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+
+/* #Ciclo5 CU22 SLA Grid */
+.sla-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.sla-card, .tecnicos-card, .cancelados-card {
+  background: white; border-radius: 14px; padding: 1.2rem;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.sla-card h3, .tecnicos-card h3, .cancelados-card h3 { font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0 0 0.3rem; }
+.sla-subtitle { font-size: 0.75rem; color: #94a3b8; margin: 0 0 1rem; }
+
+/* SLA Gauge */
+.sla-gauge { display: flex; justify-content: center; margin: 0.5rem 0; }
+.gauge-circle { position: relative; width: 120px; height: 120px; }
+.gauge-circle svg { width: 100%; height: 100%; }
+.gauge-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 1.6rem; font-weight: 800; color: #0f172a; }
+.sla-details { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.8rem; }
+.sla-detail { font-size: 0.8rem; color: #475569; }
+.sla-detail.green-text { color: #16a34a; }
+.sla-detail.red-text { color: #dc2626; }
+
+/* Técnicos */
+.tecnicos-visual { margin-top: 1.5rem; }
+.tecnicos-bar { height: 24px; background: #f1f5f9; border-radius: 12px; overflow: hidden; }
+.tecnicos-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 12px; transition: width 0.6s ease; }
+.tecnicos-nums { display: flex; justify-content: space-between; margin-top: 0.5rem; }
+.tec-disp { font-size: 0.85rem; font-weight: 700; color: #16a34a; }
+.tec-total { font-size: 0.85rem; color: #94a3b8; }
+
+/* Cancelados */
+.cancelados-count { font-size: 3rem; font-weight: 800; color: #ef4444; margin: 1rem 0 0.5rem; text-align: center; }
+.cancelados-desc { font-size: 0.78rem; color: #94a3b8; text-align: center; margin: 0; }
+
+/* #Ciclo5 CU22 Charts Grid */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.chart-card {
+  background: white; border-radius: 14px; padding: 1.2rem;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.chart-card h3 { font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0 0 1rem; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.legend-item { font-size: 0.72rem; color: #475569; display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* Tipo list */
+.tipo-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.tipo-item { display: flex; align-items: center; gap: 0.5rem; }
+.tipo-badge { padding: 3px 10px; border-radius: 6px; font-size: 0.68rem; color: white; font-weight: 700; }
+.tipo-count { font-size: 0.78rem; color: #64748b; }
+.empty-msg { text-align: center; color: #94a3b8; font-size: 0.85rem; padding: 2rem 0; }
+
+/* #Ciclo5 CU22 Zonas table */
+.zonas-table { font-size: 0.82rem; }
+.zonas-header { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 2px solid #e2e8f0; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
+.zonas-row { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 0.5rem; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
+.zona-coords { color: #334155; display: flex; align-items: center; gap: 0.5rem; }
+.zona-rank { width: 22px; height: 22px; background: #eff6ff; color: #2563eb; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; }
+.zona-count { font-weight: 700; color: #0f172a; text-align: center; }
+.zona-bar-container { height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.zona-bar { height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 4px; transition: width 0.5s; }
+
+/* #Ciclo5 CU22 Ranking table */
+.ranking-table { background: white; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.ranking-header { display: grid; grid-template-columns: 50px 2fr 1fr 1.5fr; padding: 0.8rem 1.2rem; background: #f8fafc; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; }
+.ranking-row { display: grid; grid-template-columns: 50px 2fr 1fr 1.5fr; padding: 0.8rem 1.2rem; border-top: 1px solid #f1f5f9; align-items: center; transition: background 0.15s; }
+.ranking-row:hover { background: #fafbfc; }
+.rank-badge { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; background: #f1f5f9; color: #64748b; }
+.rank-badge.gold { background: #fef3c7; color: #92400e; }
+.rank-badge.silver { background: #f1f5f9; color: #475569; }
+.rank-badge.bronze { background: #fde68a; color: #78350f; }
+.rank-name { font-weight: 600; color: #0f172a; }
+.rank-services { font-weight: 700; color: #2563eb; }
+.rank-stars { font-size: 0.82rem; color: #64748b; }
+
+/* #Ciclo5 CU22 Resumen table (enunciado) */
+.resumen-table { background: white; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.resumen-header { display: grid; grid-template-columns: 2fr 2fr 1fr; padding: 0.8rem 1.2rem; background: #0f172a; color: white; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.resumen-row { display: grid; grid-template-columns: 2fr 2fr 1fr; padding: 0.8rem 1.2rem; border-top: 1px solid #f1f5f9; align-items: center; font-size: 0.85rem; }
+.resumen-row:nth-child(even) { background: #fafbfc; }
+.resumen-kpi { font-weight: 600; color: #0f172a; }
+.resumen-val { font-weight: 700; color: #2563eb; text-align: right; }
+.resumen-val.sla-highlight { color: #16a34a; font-size: 1.1rem; }
+
+/* #Ciclo5 CU22 Responsive */
+@media (max-width: 1024px) {
+  .kpi-cards-grid { grid-template-columns: repeat(3, 1fr); }
+  .tiempos-grid { grid-template-columns: 1fr; }
+  .sla-grid { grid-template-columns: 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kpis-container { padding: 1rem; }
+  .kpi-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .ranking-header, .ranking-row { grid-template-columns: 40px 1.5fr 1fr 1fr; font-size: 0.78rem; }
+  .resumen-header, .resumen-row { grid-template-columns: 1.5fr 1.5fr 1fr; }
+}

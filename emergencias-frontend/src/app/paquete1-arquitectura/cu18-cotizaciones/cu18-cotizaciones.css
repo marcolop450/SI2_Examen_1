@@ -1,25 +1,135 @@
-/* Hereda el layout y estilos de emergencias.css */
-.layout-principal  { display: flex; min-height: 100vh; background-color: #f8fafc; }
-.contenido-derecha { flex: 1; padding: 24px; font-family: 'Segoe UI', sans-serif; }
-.header-seccion    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.titulo-pagina     { font-size: 24px; color: #1e293b; margin: 0 0 4px; font-weight: 600; }
-.subtitulo-pagina  { color: #64748b; font-size: 14px; margin: 0; }
-.btn-refrescar     { background: white; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-.btn-refrescar:hover { background: #f1f5f9; }
-.grid-tarjetas     { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-.card-emergencia   { background: white; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-.card-header       { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
-.badge-prioridad   { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+/* Cotizaciones - Ciclo 5 - CU18 - Diseño premium con filtro de especialidad */
+
+.layout-principal  { display: flex; min-height: 100vh; background-color: var(--bg-page, #eef1f8); }
+.contenido-derecha { flex: 1; padding: 28px; font-family: 'DM Sans', sans-serif; overflow-y: auto; }
+
+/* ── HEADER ────────────────────────────────────────────── */
+.header-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+.titulo-pagina  { font-size: 1.6rem; color: #0f172a; margin: 0 0 4px; font-weight: 700; }
+.subtitulo-pagina { color: #64748b; font-size: 0.875rem; margin: 0; }
+.btn-refrescar  { background: white; border: 1px solid #cbd5e1; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.875rem; transition: 0.2s; }
+.btn-refrescar:hover { background: #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+/* ── SPINNER ────────────────────────────────────────────── */
+.spinner { width: 36px; height: 36px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── ESTADO VACÍO ───────────────────────────────────────── */
+.estado-vacio { text-align: center; padding: 80px 20px; color: #64748b; }
+.estado-vacio h2 { color: #334155; margin: 12px 0 8px; }
+
+/* ── GRID ───────────────────────────────────────────────── */
+.grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+
+/* ── CARD ───────────────────────────────────────────────── */
+.card-cotizacion {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card-cotizacion:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+/* ── CARD HEADER ────────────────────────────────────────── */
+.card-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; background: #f8fafc; }
+.header-left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.badge-prioridad { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
 .prioridad-alta    { background: #fee2e2; color: #991b1b; }
 .prioridad-media   { background: #fef3c7; color: #92400e; }
 .prioridad-baja    { background: #d1fae5; color: #065f46; }
 .prioridad-incierto { background: #e2e8f0; color: #475569; }
-.fecha             { font-size: 12px; color: #94a3b8; }
-.card-body         { padding: 16px; flex-grow: 1; }
-.diagnostico       { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
-.descripcion       { color: #475569; font-size: 13px; font-style: italic; margin-bottom: 12px; }
-.ubicacion         { font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px; }
-.card-footer       { padding: 14px 16px; background: #f8fafc; border-top: 1px solid #f1f5f9; }
-.btn-aceptar       { background: #10b981; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-.btn-aceptar:hover { background: #059669; }
-.estado-vacio      { text-align: center; padding: 80px 20px; color: #64748b; }
+
+.badge-categoria { background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid #bfdbfe; }
+.badge-id { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
+
+/* ── ALERTA SIN ESPECIALISTA ────────────────────────────── */
+.alerta-sin-especialista {
+  background: #fffbeb; border-left: 4px solid #f59e0b;
+  padding: 10px 16px; font-size: 0.82rem; color: #92400e;
+}
+
+/* ── DIAGNÓSTICO IA ─────────────────────────────────────── */
+.diagnostico-ia-box {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 16px; background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+  border-bottom: 1px solid #e0f2fe;
+}
+.ia-icono { font-size: 2rem; line-height: 1; }
+.ia-titulo { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #3b82f6; letter-spacing: 0.05em; }
+.ia-descripcion { margin: 4px 0 0; font-size: 0.82rem; color: #334155; line-height: 1.4; }
+
+/* ── CARD BODY ──────────────────────────────────────────── */
+.card-body { padding: 14px 16px; }
+.descripcion-cliente { font-size: 0.875rem; color: #475569; font-style: italic; margin-bottom: 10px; }
+.ubicacion-row { display: flex; justify-content: space-between; align-items: center; }
+.link-mapa { font-size: 0.8rem; color: #e24b4a; font-weight: 600; text-decoration: none; }
+.link-mapa:hover { text-decoration: underline; }
+.fecha-hora { font-size: 0.75rem; color: #94a3b8; }
+
+/* ── FORMULARIO ─────────────────────────────────────────── */
+.cotizacion-form { padding: 16px; display: flex; flex-direction: column; gap: 14px; border-top: 1px solid #f1f5f9; }
+
+.form-grupo { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 0.78rem; font-weight: 600; color: #334155; }
+.label-hint { font-weight: 400; color: #60a5fa; font-size: 0.72rem; }
+.label-hint.sin-esp { color: #f59e0b; }
+
+.form-select, .form-input, .form-textarea {
+  padding: 10px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #0f172a;
+  background: white;
+  transition: 0.2s;
+  outline: none;
+}
+.form-select:focus, .form-input:focus, .form-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+.form-select.select-error { border-color: #f59e0b; }
+.form-textarea { resize: none; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.form-hint { font-size: 0.75rem; color: #ef4444; margin: 2px 0 0; }
+
+/* ── CARD FOOTER ────────────────────────────────────────── */
+.card-footer { padding: 14px 16px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; align-items: center; }
+
+.btn-bitacora {
+  background: #0f172a; color: white; text-decoration: none;
+  padding: 9px 14px; border-radius: 8px; font-size: 0.8rem;
+  font-weight: 600; transition: 0.2s; white-space: nowrap;
+}
+.btn-bitacora:hover { background: #1e293b; }
+
+.btn-enviar {
+  flex: 1;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white; border: none;
+  padding: 11px 16px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+}
+.btn-enviar:hover:not(:disabled) { background: linear-gradient(135deg, #059669, #047857); transform: translateY(-1px); }
+.btn-enviar:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contenido-derecha { padding: 16px; }
+  .grid-tarjetas { grid-template-columns: 1fr; }
+  .header-seccion { flex-direction: column; align-items: flex-start; }
+  .btn-refrescar { width: 100%; text-align: center; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .titulo-pagina { font-size: 1.3rem; }
+}

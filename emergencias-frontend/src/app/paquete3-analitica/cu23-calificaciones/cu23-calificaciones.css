@@ -1,0 +1,63 @@
+/* Estilos de Calificaciones y Reputación - Ciclo 5 - CU23 */
+.calificaciones-container { padding: 1.5rem; max-width: 1000px; margin: 0 auto; }
+.cal-header h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0; }
+.cal-header .subtitle { font-size: 0.85rem; color: #64748b; margin: 4px 0 0; }
+
+.loading-container { text-align: center; padding: 4rem; color: #64748b; }
+.spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Promedio Card - Ciclo 5 - CU23 */
+.promedio-card {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  border-radius: 16px; padding: 2rem; margin: 1.5rem 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+  color: white;
+}
+.promedio-main { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
+.promedio-numero { font-size: 3.5rem; font-weight: 800; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+.promedio-stars { font-size: 1.5rem; }
+.star.filled { color: #fbbf24; }
+.star.empty { color: rgba(255,255,255,0.3); }
+.promedio-total { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+
+/* Distribución bars - Ciclo 5 - CU23 */
+.promedio-distribucion { display: flex; flex-direction: column; gap: 0.6rem; justify-content: center; }
+.dist-row { display: flex; align-items: center; gap: 0.6rem; }
+.dist-label { font-size: 0.8rem; width: 28px; text-align: right; color: rgba(255,255,255,0.8); }
+.dist-bar-bg { flex: 1; height: 10px; background: rgba(255,255,255,0.15); border-radius: 5px; overflow: hidden; }
+.dist-bar-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); border-radius: 5px; transition: width 0.8s ease; }
+.dist-count { font-size: 0.78rem; width: 24px; color: rgba(255,255,255,0.6); }
+
+/* Empty state - Ciclo 5 - CU23 */
+.empty-state { text-align: center; padding: 3rem; color: #64748b; }
+.empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+.empty-state h3 { color: #334155; margin: 0 0 0.5rem; }
+
+/* Reviews Grid - Ciclo 5 - CU23 */
+.reviews-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.review-card {
+  background: white; border-radius: 12px; padding: 1.2rem;
+  border: 1px solid #e2e8f0; border-left: 4px solid;
+  transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.review-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-1px); }
+
+.review-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+.review-avatar {
+  width: 38px; height: 38px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; color: white;
+  font-weight: 700; font-size: 1rem; flex-shrink: 0;
+}
+.review-info { flex: 1; display: flex; flex-direction: column; }
+.review-name { font-weight: 600; color: #0f172a; font-size: 0.9rem; }
+.review-fecha { font-size: 0.75rem; color: #94a3b8; }
+.review-stars { font-size: 1rem; }
+.review-comment { font-size: 0.875rem; color: #475569; margin: 0; line-height: 1.5; }
+.review-incidente { font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 0.5rem; }
+
+/* Responsive - Ciclo 5 - CU23 */
+@media (max-width: 768px) {
+  .promedio-card { grid-template-columns: 1fr; }
+  .calificaciones-container { padding: 1rem; }
+}
