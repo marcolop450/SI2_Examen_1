@@ -63,7 +63,7 @@ export class Cu9Monitoreo implements OnInit, OnDestroy {
     // Evitar abrir una conexión si ya existe una activa para este incidente
     if (this.wsConnections[incidenteId]) return;
 
-    const url = `ws://localhost:8000/ws/incidente/${incidenteId}`;
+    const url = `wss://backend-ixkv.onrender.com/ws/incidente/${incidenteId}`;
     const ws = new WebSocket(url);
 
     ws.onopen = () => console.log(`WS Conectado para incidente #${incidenteId}`);
