@@ -1,13 +1,14 @@
 fastapi
-uvicorn
+uvicorn[standard]
+websockets
 sqlalchemy
 psycopg2-binary
 pydantic
 pydantic-settings
 python-dotenv
-passlib
+passlib[bcrypt]
 bcrypt==4.0.1
-python-jose
+python-jose[cryptography]
 python-multipart
 groq
 requests
