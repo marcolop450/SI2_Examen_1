@@ -23,12 +23,13 @@ export class Sidebar implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.rolUsuario = localStorage.getItem('rol') || 'taller';
+    const rol = localStorage.getItem('rol') || 'taller';
+    this.rolUsuario = rol.toLowerCase();
 
     // --- LECTURA DE SESIÓN SaaS ---
     this.tenantId = localStorage.getItem('tenant_id');
     this.esSuperAdmin = this.rolUsuario === 'admin';
-    this.esTenantOwner = this.rolUsuario === 'taller' && this.tenantId !== null;
+    this.esTenantOwner = this.rolUsuario === 'taller' && this.tenantId !== null && this.tenantId !== 'null' && this.tenantId !== 'undefined';
   }
   
   toggleSidebar() {

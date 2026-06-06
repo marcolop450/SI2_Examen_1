@@ -694,12 +694,7 @@ async def actualizar_ubicacion_tecnico(
 @router.get("/en-proceso", response_model=List[IncidenteOut])
 def listar_solicitudes_en_proceso(
     db: Session = Depends(get_db),
-    tenant_id: Optional[UUID] = Depends(get_current_tenant)
-):
-    query = db.query(Incidente).filter(Incidente.estado_enum == EstadoIncidente.en_proceso)
-    if tenant_id is not None:
-        query = query.filter(Incidente.tenant_id == tenant_id)
-    return query.all()
+    tenant_id: Optional[UUID] = Depends(get_current_tenant),
     current_user: Usuario = Depends(get_current_user)
 ):
     # #Ciclo5 - Incluir taller_asignado y estados activos para que el monitoreo
@@ -711,6 +706,10 @@ def listar_solicitudes_en_proceso(
         EstadoIncidente.en_atencion,
     ]
     query = db.query(Incidente).filter(Incidente.estado_enum.in_(estados_activos))
+
+    # CU16: Filtro Multi-Tenant
+    if tenant_id is not None:
+        query = query.filter(Incidente.tenant_id == tenant_id)
 
     # Si es taller, filtrar solo sus incidentes
     if current_user.rol.value != "admin":

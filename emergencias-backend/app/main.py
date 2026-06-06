@@ -12,9 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.models import bitacora
 from app.models import taller_rechazo
 from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones, saas
-
 from app.models import calificacion, consejo_vial  # Modelos nuevos - Ciclo 5 - CU23, CU25
-from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones
 from app.routers import bitacora as bitacora_router, kpis, calificaciones, reportes_ia, consejos_viales  # Routers - Ciclo 5
 app = FastAPI(
     title="Plataforma Inteligente de Emergencias Vehiculares",

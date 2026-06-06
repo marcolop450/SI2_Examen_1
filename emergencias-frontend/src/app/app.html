@@ -1,4 +1,3 @@
-<ng-container *ngIf="isRutaPublica(); else layoutMaestro">
 <!-- #Ciclo5 CU19 - Layout principal con banner de conectividad PWA -->
 
 <!-- ═══ BANNER OFFLINE - Ciclo 5 - CU19 ═══ -->
@@ -19,7 +18,7 @@
 </div>
 
 <!-- ═══ LAYOUT NORMAL ═══ -->
-<ng-container *ngIf="router.url === '/login'; else layoutMaestro">
+<ng-container *ngIf="isRutaPublica(); else layoutMaestro">
   <router-outlet></router-outlet>
 </ng-container>
 

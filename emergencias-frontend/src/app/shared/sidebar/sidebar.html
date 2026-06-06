@@ -21,7 +21,7 @@
     </a>
     
     <ng-container *ngIf="rolUsuario === 'admin'">
-      <p class="nav-title">Paquete 1: Gestión</p>
+      <p class="nav-title">Gestión</p>
       
       <a routerLink="/clientes" routerLinkActive="active" class="nav-link">
         <span class="icon">👥</span> Clientes
@@ -31,20 +31,21 @@
         <span class="icon">🔧</span> Talleres
       </a>
 
-      <p class="nav-title">Paquete 5: Finanzas</p>
+      <p class="nav-title">Finanzas</p>
       <a routerLink="/comisiones" routerLinkActive="active" class="nav-link">
         <span class="icon">📊</span> Comisiones
       </a>
 
       <!-- 🆕 SECCIÓN CU16: ADMIN COCKPIT -->
-      <p class="nav-title">Paquete 6: Multi-Tenant</p>
+      <p class="nav-title">Multi-Tenant</p>
       <a routerLink="/admin-cockpit" routerLinkActive="active" class="nav-link">
         <span class="icon">📊</span> Cockpit SaaS
       </a>
       <a routerLink="/planes" routerLinkActive="active" class="nav-link">
         <span class="icon">💎</span> Catálogo de Planes
+      </a>
       <!-- Ciclo 5 - CU22, CU24, CU25 -->
-      <p class="nav-title">Ciclo 5: Analítica</p>
+      <p class="nav-title">Analítica</p>
       <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
         <span class="icon">📊</span> Analítica KPIs
       </a>

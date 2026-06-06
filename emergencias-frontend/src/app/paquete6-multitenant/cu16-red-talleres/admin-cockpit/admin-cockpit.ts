@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { TenantService } from '../../../core/services/tenant.service';
 
 interface TenantResumen {
@@ -19,7 +18,7 @@ interface TenantResumen {
 @Component({
   selector: 'app-admin-cockpit',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './admin-cockpit.html',
   styleUrls: ['./admin-cockpit.css']
 })

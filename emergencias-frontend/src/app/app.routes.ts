@@ -55,6 +55,5 @@ export const routes: Routes = [
   { path: 'calificaciones', component: Cu23CalificacionesComponent }, // Calificaciones - Ciclo 5 - CU23
   { path: 'reportes-ia', component: Cu24ReportesIaComponent },        // Reportes IA - Ciclo 5 - CU24
   { path: 'consejos-viales', component: Cu25ConsejosVialesComponent },// Consejos Viales - Ciclo 5 - CU25
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

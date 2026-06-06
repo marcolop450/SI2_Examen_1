@@ -48,8 +48,6 @@ export class App implements OnInit, OnDestroy {
     if (!this.isRutaPublica()) {
       this.solicitarPermisoWindows();
     }
-  ngOnInit() {
-    this.solicitarPermisoWindows();
 
     // #Ciclo5 CU19 - Suscribirse a cambios de conectividad
     this.subs.push(

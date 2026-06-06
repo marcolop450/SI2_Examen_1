@@ -61,6 +61,37 @@
       </div>
     </a>
 
+    <!-- 🆕 SECCIÓN CU16: ADMIN COCKPIT -->
+    <a class="kpi-card" routerLink="/admin-cockpit">
+      <div class="kpi-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <div class="kpi-info">
+        <h3>Cockpit SaaS</h3>
+        <p>Panel Multi-Tenant</p>
+      </div>
+      <div class="kpi-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>
+    </a>
+
+    <a class="kpi-card" routerLink="/planes">
+      <div class="kpi-icon indigo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div class="kpi-info">
+        <h3>Catálogo de Planes</h3>
+        <p>Suscripciones B2B</p>
+      </div>
+      <div class="kpi-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>
+    </a>
+
     <!-- Ciclo 5 - CU22: Analítica KPIs -->
     <a class="kpi-card" routerLink="/kpis">
       <div class="kpi-icon purple">
@@ -184,6 +215,22 @@
       <div class="kpi-info">
         <h3>Mis Ingresos</h3>
         <p>Historial de servicios y comisiones</p>
+      </div>
+      <div class="kpi-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>
+    </a>
+
+    <!-- 🆕 SECCIÓN CU16: TENANT OWNER -->
+    <a class="kpi-card" routerLink="/dashboard-owner" *ngIf="esTenantOwner">
+      <div class="kpi-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div class="kpi-info">
+        <h3>Mi Red de Talleres</h3>
+        <p>Dashboard de tu Franquicia</p>
       </div>
       <div class="kpi-arrow">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>

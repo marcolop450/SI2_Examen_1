@@ -5,14 +5,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TallerService } from '../../../core/services/taller';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -90,5 +90,15 @@ export class LoginComponent {
         alert("Geolocalización no soportada en este navegador.");
       }
     }
+  }
+
+  irAPlanes() {
+    this.router.navigate(['/']).then(success => {
+      if (!success) {
+        alert('El enrutador falló silenciosamente al intentar ir a /.');
+      }
+    }).catch(err => {
+      alert('Error en el enrutador:\n' + err);
+    });
   }
 }
