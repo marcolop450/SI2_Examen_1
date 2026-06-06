@@ -44,6 +44,12 @@
       </div>
     </div>
 
+    <!-- 🆕 BADGE CORPORATIVO (solo si pertenece a un Tenant) -->
+    <div class="badge-corporativo" *ngIf="tenantId">
+      <span class="badge-corp-icon">🏢</span>
+      <span class="badge-corp-text">Modo Corporativo</span>
+    </div>
+
     <div class="perfil-usuario" routerLink="/perfil" style="cursor: pointer;">
       <div class="avatar">{{ nombreUsuario.charAt(0) | uppercase }}</div>
       <div class="info-perfil">

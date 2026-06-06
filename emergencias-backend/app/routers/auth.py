@@ -9,6 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from uuid import UUID
+from typing import Optional
 from app.database import get_db
 from app.models.usuario import Usuario, TipoRol # 👈 Añadido TipoRol
 from app.models.taller import Taller
@@ -43,7 +45,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_access_token(data={
         "sub": usuario.email,
-        "rol": usuario.rol
+        "rol": usuario.rol,
+        "tenant_id": str(usuario.tenant_id) if usuario.tenant_id else None
     })
 
     return TokenResponse(
@@ -98,3 +101,26 @@ def get_current_user(
         )
 
     return usuario
+
+
+# -------------------------------------------------------
+# Dependencia reutilizable: obtener el tenant_id autenticado
+# -------------------------------------------------------
+def get_current_tenant(
+    current_user: Usuario = Depends(get_current_user)
+) -> Optional[UUID]:
+
+    # Regla de Negocio 1: Admin o Cliente pueden no pertenecer a un tenant de forma legítima
+    if current_user.rol in [TipoRol.admin, TipoRol.cliente]:
+        return None
+
+    # Regla de Negocio 2: Taller o Técnico deben poseer obligatoriamente un tenant_id válido
+    if current_user.rol in [TipoRol.taller, TipoRol.tecnico]:
+        if not current_user.tenant_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales inválidas: Falta la identidad del Tenant"
+            )
+        return current_user.tenant_id
+
+    return None

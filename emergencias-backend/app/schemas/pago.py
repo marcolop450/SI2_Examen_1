@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from decimal import Decimal
 from datetime import datetime
+from typing import Optional
+from uuid import UUID
 from app.models.pago import MetodoPago
 
 class PagoCreate(BaseModel):
@@ -10,6 +12,7 @@ class PagoCreate(BaseModel):
 
 class PagoOut(BaseModel):
     id_pago:                    int
+    tenant_id:                  Optional[UUID] = None
     incidente_id:               int
     dueño_taller_id:            int
     monto_total_decimal:        Decimal

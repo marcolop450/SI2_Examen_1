@@ -2,9 +2,9 @@
 # CU20 — Modelo de Excepciones Operativas
 # Registra cancelaciones, llegada del seguro y casos mixtos
 # ============================================================
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, DECIMAL, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, DECIMAL, ForeignKey, func
 from app.database import Base
+
 
 class ExcepcionOperativa(Base):
     __tablename__ = "excepciones_operativas"

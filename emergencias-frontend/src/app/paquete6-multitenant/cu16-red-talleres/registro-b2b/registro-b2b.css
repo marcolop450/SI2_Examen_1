@@ -1,0 +1,239 @@
+/* ===========================
+   REGISTRO B2B — CSS PURO
+   Paleta: #f8fafc #e2e8f0 #0f172a #1e40af #f97316
+   =========================== */
+
+/* === BASE === */
+.registro-b2b {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1.5rem;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #0f172a;
+}
+
+/* === CONTENEDOR FLOTANTE === */
+.form-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 720px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+}
+
+.form-container h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #0f172a, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+/* === FIELDSET (Secciones) === */
+fieldset {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+legend {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-icon {
+  font-size: 1.2rem;
+}
+
+/* === CAMPOS === */
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.35rem;
+}
+
+.field-group input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.field-group input::placeholder {
+  color: #94a3b8;
+}
+
+.field-group input:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  background: #ffffff;
+}
+
+/* === FILA DUAL (columnas lado a lado) === */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* === INPUT ADDON (subdominio) === */
+.input-addon {
+  display: flex;
+  align-items: stretch;
+}
+
+.input-addon input {
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+  flex: 1;
+}
+
+.addon-text {
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  padding: 0.7rem 0.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+/* === ERROR DE CAMPO === */
+.field-error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+/* === ALERTAS === */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.alert-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* === BOTÓN SUBMIT === */
+.btn-registrar {
+  width: 100%;
+  padding: 0.9rem;
+  background: #1e40af;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-registrar:hover:not(:disabled) {
+  background: #f97316;
+  transform: scale(1.015);
+}
+
+.btn-registrar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === FOOTER === */
+.form-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.form-footer a {
+  color: #1e40af;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.form-footer a:hover {
+  color: #f97316;
+  text-decoration: underline;
+}
+
+.form-footer p {
+  margin: 0.4rem 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 640px) {
+  .registro-b2b {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-container {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .form-container h1 {
+    font-size: 1.4rem;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  fieldset {
+    padding: 1rem;
+  }
+}

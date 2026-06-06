@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, Text, TIMESTAMP, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, Text, TIMESTAMP, ForeignKey, func
 from app.database import Base
+
 
 class TallerRechazo(Base):
     __tablename__ = "talleres_rechazos"

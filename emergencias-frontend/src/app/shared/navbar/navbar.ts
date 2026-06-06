@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   mostrarDropdown: boolean = false;
   nombreUsuario: string = ''; 
   rolUsuario: string = '';
+  tenantId: string | null = null;
   
   private pollingInterval: any; // 🔥 Guardamos el vigilante para apagarlo si salimos
 
@@ -27,6 +28,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.nombreUsuario = localStorage.getItem('nombre') || 'Usuario';
     const rol = localStorage.getItem('rol') || 'taller';
     this.rolUsuario = rol.charAt(0).toUpperCase() + rol.slice(1);
+
+    // --- DETECCIÓN DE SESIÓN CORPORATIVA ---
+    this.tenantId = localStorage.getItem('tenant_id');
 
     this.actualizarContador();
 

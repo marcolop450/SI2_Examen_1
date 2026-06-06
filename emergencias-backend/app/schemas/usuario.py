@@ -10,6 +10,7 @@
 
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from uuid import UUID
 from app.models.usuario import TipoRol
 
 
@@ -71,6 +72,7 @@ class UsuarioUpdate(BaseModel):
 # -------------------------------------------------------
 class UsuarioOut(BaseModel):
     id_usuario: int
+    tenant_id:  Optional[UUID] = None
     nombre:     str
     email:      str
     telefono:   Optional[str] = None

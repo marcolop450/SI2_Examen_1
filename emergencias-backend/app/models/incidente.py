@@ -9,9 +9,9 @@
 #   3. historial_estados → Trazabilidad de cambios de estado (Auditoría)
 # ============================================================
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum as SAEnum, Numeric, TIMESTAMP, Text, DECIMAL
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum as SAEnum, Numeric, TIMESTAMP, Text, DECIMAL, func
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import UUID
 from app.database import Base
 import enum
 
@@ -51,6 +51,7 @@ class Incidente(Base):
     __tablename__ = "incidentes"
 
     id_incidente             = Column(Integer, primary_key=True, index=True)
+    tenant_id                = Column(UUID(as_uuid=True), ForeignKey("tenants.id_tenant", ondelete="CASCADE"), nullable=True)
     cliente_id               = Column(Integer, ForeignKey("usuarios.id_usuario"))
     vehiculo_id              = Column(Integer, ForeignKey("vehiculos.id_vehiculo"))
     
@@ -70,6 +71,7 @@ class Incidente(Base):
 
     evidencias = relationship("EvidenciaIA", back_populates="incidente", cascade="all, delete")
     historial  = relationship("HistorialEstado", back_populates="incidente", cascade="all, delete")
+    tenant     = relationship("Tenant", back_populates="incidentes")
 
 # -------------------------------------------------------
 # TABLA SECUNDARIA: evidencias_ia

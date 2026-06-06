@@ -16,10 +16,10 @@
 # ACTORES: A1, A2, A3, A4 (todos reciben notificaciones)
 # ============================================================
 
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, TIMESTAMP
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, TIMESTAMP, func
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from app.database import Base
+
 
 
 class Notificacion(Base):

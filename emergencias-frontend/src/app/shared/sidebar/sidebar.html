@@ -36,6 +36,13 @@
         <span class="icon">📊</span> Comisiones
       </a>
 
+      <!-- 🆕 SECCIÓN CU16: ADMIN COCKPIT -->
+      <p class="nav-title">Paquete 6: Multi-Tenant</p>
+      <a routerLink="/admin-cockpit" routerLinkActive="active" class="nav-link">
+        <span class="icon">📊</span> Cockpit SaaS
+      </a>
+      <a routerLink="/planes" routerLinkActive="active" class="nav-link">
+        <span class="icon">💎</span> Catálogo de Planes
       <!-- Ciclo 5 - CU22, CU24, CU25 -->
       <p class="nav-title">Ciclo 5: Analítica</p>
       <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
@@ -73,6 +80,13 @@
         <span class="icon">💰</span> Mis Ingresos
       </a>
 
+      <!-- 🆕 SECCIÓN CU16: TENANT OWNER (solo si tiene tenant_id) -->
+      <ng-container *ngIf="esTenantOwner">
+        <p class="nav-title">Paquete 6: Mi Red</p>
+        <a routerLink="/dashboard-owner" routerLinkActive="active" class="nav-link">
+          <span class="icon">🏪</span> Mi Red de Talleres
+        </a>
+      </ng-container>
       <!-- Ciclo 5 - CU22, CU23, CU25 -->
       <p class="nav-title">Ciclo 5: Analítica</p>
       <a routerLink="/kpis" routerLinkActive="active" class="nav-link">

@@ -1,0 +1,93 @@
+<section class="admin-cockpit">
+  <!-- ENCABEZADO -->
+  <div class="cockpit-header">
+    <h1>Cockpit Administrativo SaaS</h1>
+    <p class="cockpit-subtitle">Panel de control global de la plataforma Multi-Tenant.</p>
+  </div>
+
+  <!-- ========== BLOQUE 1: TARJETAS DE MÉTRICAS ========== -->
+  <div class="metricas-grid">
+    <div class="metrica-card">
+      <span class="metrica-icon">🏢</span>
+      <div class="metrica-body">
+        <p class="metrica-valor">{{ totalOrganizaciones }}</p>
+        <p class="metrica-label">Organizaciones</p>
+      </div>
+    </div>
+
+
+
+    <div class="metrica-card">
+      <span class="metrica-icon">🏪</span>
+      <div class="metrica-body">
+        <p class="metrica-valor">{{ totalTalleres }}</p>
+        <p class="metrica-label">Talleres Activos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BLOQUE 2: DIRECTORIO DE REDES ========== -->
+  <div class="directorio-container">
+    <h2>Directorio de Redes Corporativas</h2>
+
+    <!-- TABLA DESKTOP -->
+    <table class="directorio-tabla">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Subdominio</th>
+          <th>Plan</th>
+          <th>Talleres</th>
+          <th>Registro</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tenants">
+          <td>
+            <strong>{{ t.nombre }}</strong>
+          </td>
+          <td>
+            <code>{{ t.subdominio }}</code>
+          </td>
+          <td>
+            <span class="badge badge-plan">{{ t.nombre_plan }}</span>
+          </td>
+          <td [class.cuota-critica]="cuotaCritica(t)">
+            {{ t.talleres_activos }} / {{ t.limite_talleres }}
+          </td>
+          <td>{{ t.fecha_registro }}</td>
+          <td>
+            <span class="badge"
+                  [class.badge-activo]="t.estado === 'activo'"
+                  [class.badge-suspendido]="t.estado === 'suspendido'">
+              {{ t.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- TARJETAS MOBILE (visible solo en ≤768px) -->
+    <div class="directorio-cards">
+      <div *ngFor="let t of tenants" class="tenant-card-mobile">
+        <div class="card-mobile-header">
+          <strong>{{ t.nombre }}</strong>
+          <span class="badge"
+                [class.badge-activo]="t.estado === 'activo'"
+                [class.badge-suspendido]="t.estado === 'suspendido'">
+            {{ t.estado }}
+          </span>
+        </div>
+        <div class="card-mobile-body">
+          <p><span class="card-label">Subdominio:</span> <code>{{ t.subdominio }}</code></p>
+          <p><span class="card-label">Plan:</span> {{ t.nombre_plan }}</p>
+          <p [class.cuota-critica]="cuotaCritica(t)">
+            <span class="card-label">Talleres:</span> {{ t.talleres_activos }} / {{ t.limite_talleres }}
+          </p>
+          <p><span class="card-label">Registro:</span> {{ t.fecha_registro }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,129 @@
+<section class="landing-planes">
+  <!-- NAV BAR -->
+  <header class="landing-navbar" *ngIf="!isLoggedIn">
+    <div class="nav-brand">
+      <span class="brand-icon">🔧</span>
+      <span class="brand-name">RedTalleres SaaS</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/login" class="btn-nav-login">Iniciar Sesión</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <div class="hero" *ngIf="!isLoggedIn">
+    <h1>La Plataforma Inteligente para tu Red de Talleres</h1>
+    <p class="hero-subtitle">
+      Optimiza la asistencia, despacha incidentes en tiempo real, integra IA de diagnóstico y gestiona múltiples sucursales bajo una infraestructura SaaS moderna y escalable.
+    </p>
+    <div class="hero-actions" *ngIf="!isLoggedIn">
+      <button (click)="scrollAPlanes()" class="btn-hero-cta">Ver Planes y Precios</button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE CARACTERÍSTICAS DEL SOFTWARE -->
+  <div class="features-section" *ngIf="!isLoggedIn">
+    <div class="section-header">
+      <h2>¿Qué ofrece nuestra plataforma?</h2>
+      <p>Todo lo que necesitas para digitalizar el soporte vehicular corporativo</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="f-card-icon">🏢</span>
+        <h3>Soporte Multi-Tenant (CU16)</h3>
+        <p>Aislamiento absoluto de bases de datos para que cada organización gestione sus propios talleres con total privacidad.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="f-card-icon">📍</span>
+        <h3>Monitoreo en Tiempo Real (CU9)</h3>
+        <p>Seguimiento geolocalizado en vivo en mapas de grúas y mecánicos asignados en ruta hacia los incidentes vehiculares.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="f-card-icon">🤖</span>
+        <h3>Asistente de IA (CU8)</h3>
+        <p>Análisis automático de imágenes de colisiones para diagnosticar la gravedad del siniestro y acelerar la cotización.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="f-card-icon">💸</span>
+        <h3>Control de Comisiones (CU14)</h3>
+        <p>Facturación automatizada, comisiones calculadas al instante por servicios concluidos y pasarela de pago segura.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE PLANES -->
+  <div id="planes-section" class="planes-container">
+    <div class="section-header">
+      <h2>Nuestros Planes de Suscripción</h2>
+      <p>Elige la cuota perfecta para tu volumen operativo. Escala cuando lo necesites.</p>
+    </div>
+
+    <!-- ESTADO DE CARGA -->
+    <div *ngIf="cargando" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando planes disponibles...</p>
+    </div>
+
+    <!-- ESTADO DE ERROR -->
+    <div *ngIf="error" class="error-banner">
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- GRID DE TARJETAS -->
+    <div *ngIf="!cargando && !error" class="planes-grid">
+      <div
+        *ngFor="let plan of planes"
+        class="plan-card"
+        [class.premium-card]="plan.nombre.toLowerCase().includes('premium')"
+      >
+        <div class="plan-header">
+          <h2>{{ plan.nombre }}</h2>
+          <span class="plan-precio">
+            ${{ plan.precio }}<small>/mes</small>
+          </span>
+        </div>
+
+        <p class="plan-descripcion">
+          Plan ideal para redes en {{ plan.nombre.toLowerCase().includes('premium') ? 'rápido crecimiento' : 'etapa de inicio' }}. Accede a la gestión comercial 3NF.
+        </p>
+
+        <ul class="plan-features">
+          <li>
+            <span class="feature-icon">🏪</span>
+            Hasta <strong>{{ plan.limite_talleres ?? '∞' }}</strong> talleres activos
+          </li>
+          <li>
+            <span class="feature-icon">👥</span>
+            Usuarios y mecánicos ilimitados
+          </li>
+          <li>
+            <span class="feature-icon">⚡</span>
+            Geolocalización en tiempo real activa
+          </li>
+          <li>
+            <span class="feature-icon">🛡️</span>
+            Soporte técnico preferente 24/7
+          </li>
+        </ul>
+
+        <!-- Botón Comenzar ahora, se oculta si ya está logueado (ej: admin global) -->
+        <button 
+          *ngIf="!isLoggedIn" 
+          class="btn-seleccionar" 
+          (click)="seleccionarPlan(plan)"
+        >
+          Comenzar ahora →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="landing-footer" *ngIf="!isLoggedIn">
+    <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión aquí</a></p>
+  </div>
+</section>
