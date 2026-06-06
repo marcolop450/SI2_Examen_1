@@ -19,7 +19,7 @@ from uuid import UUID
 from app.database import get_db
 from app.models.usuario import Usuario, TipoRol
 from app.models.taller import Taller
-from app.models import Plan, Tenant
+from app.models import Plan, Tenant, Suscripcion
 from app.schemas.taller import TallerCreate, TallerUpdate, TallerOut
 from app.utils.security import hash_password
 from app.routers.auth import get_current_user, get_current_tenant
@@ -72,7 +72,8 @@ def registrar_taller(
 ):
     # 1. Validación de Límites por Plan SaaS (Solo si hay tenant_id)
     if tenant_id is not None:
-        plan = db.query(Plan).join(Tenant).filter(Tenant.id_tenant == tenant_id).first()
+        suscripcion = db.query(Suscripcion).filter(Suscripcion.tenant_id == tenant_id).first()
+        plan = db.query(Plan).filter(Plan.id_plan == suscripcion.plan_id).first() if suscripcion else None
         if plan and plan.limite_talleres is not None:
             talleres_actuales = db.query(Taller).filter(Taller.tenant_id == tenant_id).count()
             if talleres_actuales >= plan.limite_talleres:

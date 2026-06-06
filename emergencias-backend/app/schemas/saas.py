@@ -92,3 +92,22 @@ class TenantRegisterRequest(BaseModel):
     tenant:  TenantRegisterTenant
     taller:  TenantRegisterTaller
     usuario: TenantRegisterUser
+
+
+# -----------------------------------------------------------
+# CU16: DTO de Resumen para el Admin Cockpit
+# Agregación relacional: Tenant + Plan + COUNT(Talleres) + Suscripción
+# -----------------------------------------------------------
+class TenantSummaryOut(BaseModel):
+    id_tenant:        UUID
+    nombre:           str
+    subdominio:       str
+    nombre_plan:      str
+    precio_plan:      float
+    fecha_registro:   datetime
+    talleres_activos: int
+    limite_talleres:  int
+    estado:           str          # "activo" | "suspendido" | "sin_suscripcion"
+
+    model_config = ConfigDict(from_attributes=True)
+

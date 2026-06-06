@@ -15,6 +15,7 @@ export class LandingPlanesComponent implements OnInit {
   planes: PlanOut[] = [];
   cargando = true;
   error: string | null = null;
+  isLoggedIn = false;
 
   constructor(
     private tenantService: TenantService,
@@ -22,6 +23,7 @@ export class LandingPlanesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isLoggedIn = !!(localStorage.getItem('token') || localStorage.getItem('auth_token'));
     this.tenantService.obtenerPlanes().subscribe({
       next: (data) => {
         this.planes = data;
@@ -38,5 +40,12 @@ export class LandingPlanesComponent implements OnInit {
     this.router.navigate(['/registro-b2b'], {
       queryParams: { plan_id: plan.id_plan }
     });
+  }
+
+  scrollAPlanes(): void {
+    const el = document.getElementById('planes-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }

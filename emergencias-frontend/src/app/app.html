@@ -1,4 +1,4 @@
-<ng-container *ngIf="router.url === '/login'; else layoutMaestro">
+<ng-container *ngIf="isRutaPublica(); else layoutMaestro">
   <router-outlet></router-outlet>
 </ng-container>
 

@@ -41,6 +41,6 @@ export const routes: Routes = [
   { path: 'dashboard-owner', component: DashboardOwnerComponent },
 
   // --- COMODINES (siempre al final) ---
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', component: LandingPlanesComponent, pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

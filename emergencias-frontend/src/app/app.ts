@@ -16,9 +16,26 @@ export class App implements OnInit {
 
   constructor(public router: Router) {}
 
+  isRutaPublica(): boolean {
+    const url = this.router.url.split('?')[0];
+    if (url === '/login' || url === '/') {
+      return true;
+    }
+    if (url === '/registro-b2b') {
+      return true;
+    }
+    if (url === '/planes') {
+      const logged = !!(localStorage.getItem('token') || localStorage.getItem('auth_token'));
+      return !logged; // Si está logueado, NO es pública (se renderiza dentro del layout con sidebar)
+    }
+    return false;
+  }
+
   // 🔥 Se ejecuta apenas carga la página web
   ngOnInit() {
-    this.solicitarPermisoWindows();
+    if (!this.isRutaPublica()) {
+      this.solicitarPermisoWindows();
+    }
   }
 
   toggleSidebar() {

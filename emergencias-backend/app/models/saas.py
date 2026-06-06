@@ -15,27 +15,19 @@ class Plan(Base):
 
     id_plan           = Column(Integer, primary_key=True, index=True)
     nombre            = Column(String(100), nullable=False)
-    descripcion       = Column(String(255), nullable=True)
-    precio            = Column(Numeric(10, 2), nullable=False)
-    limite_usuarios   = Column(Integer, nullable=True)
+    precio            = Column("precio_mensual", Numeric(10, 2), nullable=False)
     limite_talleres   = Column(Integer, nullable=True)
-    limite_incidentes = Column(Integer, nullable=True)
-
-    # Relación uno-a-muchos con Tenants
-    tenants           = relationship("Tenant", back_populates="plan")
 
 
 class Tenant(Base):
     __tablename__ = "tenants"
 
     id_tenant      = Column(UUID(as_uuid=True), primary_key=True, index=True)
-    plan_id        = Column(Integer, ForeignKey("planes.id_plan"), nullable=False)
-    nombre         = Column(String(150), nullable=False)
-    subdominio     = Column(String(100), unique=True, nullable=False)
-    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
+    nombre         = Column("nombre_comercial", String(150), nullable=False)
+    subdominio     = Column("slug", String(100), unique=True, nullable=False)
+    fecha_creacion = Column("fecha_registro", DateTime(timezone=True), server_default=func.now())
 
     # Relaciones comerciales
-    plan           = relationship("Plan", back_populates="tenants")
     suscripciones  = relationship("Suscripcion", back_populates="tenant", cascade="all, delete-orphan")
 
     # Relaciones operativas (resueltas por string diferido para evitar dependencias circulares)
