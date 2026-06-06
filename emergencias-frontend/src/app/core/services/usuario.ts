@@ -7,7 +7,7 @@ import { Usuario } from '../../shared/models/usuario.model';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8000/usuarios/';
+  private apiUrl = 'https://backend-ixkv.onrender.com/usuarios/';
 
   constructor(private http: HttpClient) {}
 

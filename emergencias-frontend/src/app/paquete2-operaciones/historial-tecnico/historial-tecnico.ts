@@ -33,7 +33,7 @@ export class HistorialTecnico implements OnInit {
       'Authorization': `Bearer ${token}`
     });
 
-    this.http.get<any[]>(`http://localhost:8000/incidentes/historial/tecnico/${this.idTecnico}`, { headers }).subscribe({
+    this.http.get<any[]>(`https://backend-ixkv.onrender.com/incidentes/historial/tecnico/${this.idTecnico}`, { headers }).subscribe({
       next: (data) => {
         this.historial = data;
         this.cargando = false;

@@ -32,7 +32,7 @@ export class UbicacionComponent implements OnInit {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
-    this.http.get<any>('http://localhost:8000/talleres/mi-taller/perfil', { headers }).subscribe({
+    this.http.get<any>('https://backend-ixkv.onrender.com/talleres/mi-taller/perfil', { headers }).subscribe({
       next: (taller) => {
         if (taller.latitud_decimal && taller.longitud_decimal) {
           this.tieneUbicacion = true;
@@ -64,7 +64,7 @@ export class UbicacionComponent implements OnInit {
           const token = localStorage.getItem('token');
           const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
-          this.http.patch('http://localhost:8000/talleres/mi-ubicacion/actualizar', payload, { headers }).subscribe({
+          this.http.patch('https://backend-ixkv.onrender.com/talleres/mi-ubicacion/actualizar', payload, { headers }).subscribe({
             next: () => {
               this.latitudActual = lat;
               this.longitudActual = lng;

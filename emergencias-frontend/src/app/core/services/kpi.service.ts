@@ -42,7 +42,7 @@ export interface TallerRanking {
 
 @Injectable({ providedIn: 'root' })
 export class KpiService {
-  private api = 'http://localhost:8000';
+  private api = 'https://backend-ixkv.onrender.com';
   constructor(private http: HttpClient) {}
 
   // Resumen general de KPIs - Ciclo 5 - CU22

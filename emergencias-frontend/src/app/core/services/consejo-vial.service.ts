@@ -16,7 +16,7 @@ export interface ConsejoVial {
 
 @Injectable({ providedIn: 'root' })
 export class ConsejoVialService {
-  private api = 'http://localhost:8000';
+  private api = 'https://backend-ixkv.onrender.com';
   constructor(private http: HttpClient) {}
 
   // Listar todos los consejos activos - Ciclo 5 - CU25
