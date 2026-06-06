@@ -27,6 +27,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 # ===================================================================
 # CU25: LISTAR TODOS LOS CONSEJOS ACTIVOS - Ciclo 5 - CU25
 # ===================================================================
+# Descripción: Lista todos los consejos de seguridad vial activos
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.get("/", response_model=List[ConsejoOut])
 def listar_consejos(db: Session = Depends(get_db)):
     return db.query(ConsejoSeguridad).filter(
@@ -37,6 +40,9 @@ def listar_consejos(db: Session = Depends(get_db)):
 # ===================================================================
 # CU25: FILTRAR POR CATEGORÍA - Ciclo 5 - CU25
 # ===================================================================
+# Descripción: Filtra consejos de seguridad por una categoría específica
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.get("/por-categoria/{categoria}", response_model=List[ConsejoOut])
 def consejos_por_categoria(
     categoria: str,
@@ -52,6 +58,9 @@ def consejos_por_categoria(
 # CU25: CONSEJOS PERSONALIZADOS PARA UN INCIDENTE - Ciclo 5 - CU25
 # Analiza la clasificación IA del incidente y retorna consejos relevantes
 # ===================================================================
+# Descripción: Obtiene consejos personalizados según el tipo de daño del incidente
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.get("/para-incidente/{incidente_id}", response_model=List[ConsejoOut])
 def consejos_para_incidente(
     incidente_id: int,
@@ -96,6 +105,9 @@ def consejos_para_incidente(
 # ===================================================================
 # CU25: CREAR NUEVO CONSEJO (admin) - Ciclo 5 - CU25
 # ===================================================================
+# Descripción: Administrador crea un nuevo consejo de seguridad vial
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.post("/", response_model=ConsejoOut, status_code=status.HTTP_201_CREATED)
 def crear_consejo(
     datos: ConsejoCreate,
@@ -120,6 +132,9 @@ def crear_consejo(
 # ===================================================================
 # CU25: GENERAR CONSEJOS CON IA PARA UN INCIDENTE - Ciclo 5 - CU25
 # ===================================================================
+# Descripción: Invoca al agente conversacional LLM para generar consejos precisos
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.post("/generar-ia/{incidente_id}")
 def generar_consejos_ia(
     incidente_id: int,
@@ -192,6 +207,9 @@ def generar_consejos_ia(
 # ===================================================================
 # CU25: ACTUALIZAR CONSEJO (admin) - Ciclo 5 - CU25
 # ===================================================================
+# Descripción: Actualiza un consejo de seguridad vial existente
+# Ciclo: Ciclo 5
+# CU: CU25
 @router.put("/{id_consejo}", response_model=ConsejoOut)
 def actualizar_consejo(
     id_consejo: int,

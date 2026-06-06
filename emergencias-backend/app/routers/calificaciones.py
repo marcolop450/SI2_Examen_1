@@ -24,6 +24,9 @@ router = APIRouter(prefix="/calificaciones", tags=["CU23 - Calificaciones Post-S
 # CU23: CLIENTE REGISTRA CALIFICACIÓN - Ciclo 5 - CU23
 # Solo para incidentes finalizados, una calificación por incidente
 # ===================================================================
+# Descripción: Cliente registra una calificación para un incidente finalizado
+# Ciclo: Ciclo 5
+# CU: CU23
 @router.post("/", response_model=CalificacionOut, status_code=status.HTTP_201_CREATED)
 def registrar_calificacion(
     datos: CalificacionCreate,
@@ -86,6 +89,9 @@ def registrar_calificacion(
 # ===================================================================
 # CU23: TALLER VE SUS CALIFICACIONES - Ciclo 5 - CU23
 # ===================================================================
+# Descripción: Taller ve todas las calificaciones que le han dejado
+# Ciclo: Ciclo 5
+# CU: CU23
 @router.get("/mis-calificaciones", response_model=List[CalificacionOut])
 def mis_calificaciones(
     db: Session = Depends(get_db),
@@ -124,6 +130,9 @@ def mis_calificaciones(
 # ===================================================================
 # CU23: PROMEDIO DE CALIFICACIONES DE UN TALLER - Ciclo 5 - CU23
 # ===================================================================
+# Descripción: Obtiene el promedio de calificaciones y distribución de estrellas de un taller
+# Ciclo: Ciclo 5
+# CU: CU23
 @router.get("/promedio/{taller_id}", response_model=PromedioCalificacion)
 def promedio_calificaciones(
     taller_id: int,
@@ -157,6 +166,9 @@ def promedio_calificaciones(
 # ===================================================================
 # CU23: CALIFICACIONES DE UN TALLER ESPECÍFICO - Ciclo 5 - CU23
 # ===================================================================
+# Descripción: Obtiene el historial de calificaciones de un taller específico
+# Ciclo: Ciclo 5
+# CU: CU23
 @router.get("/taller/{taller_id}", response_model=List[CalificacionOut])
 def calificaciones_taller(
     taller_id: int,

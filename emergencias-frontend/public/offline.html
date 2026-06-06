@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- #Ciclo5 CU19 - Página mostrada cuando no hay conexión - PWA Offline -->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sin Conexión — Emergencias Vehiculares</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      color: white; padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 3rem 2.5rem;
+      text-align: center; max-width: 480px; width: 100%;
+      backdrop-filter: blur(10px);
+    }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; display: block;
+      animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    p { color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem; }
+    .badge {
+      display: inline-block; background: rgba(239,68,68,0.2);
+      border: 1px solid rgba(239,68,68,0.4); color: #fca5a5;
+      padding: 6px 16px; border-radius: 99px; font-size: 0.85rem; margin-bottom: 2rem;
+    }
+    .tip {
+      background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; text-align: left;
+    }
+    .tip h3 { font-size: 0.85rem; color: #60a5fa; margin-bottom: 0.5rem; }
+    .tip p { font-size: 0.82rem; color: #94a3b8; margin: 0; }
+    .btn {
+      background: #3b82f6; color: white; border: none;
+      padding: 12px 28px; border-radius: 10px; font-size: 1rem;
+      font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%;
+    }
+    .btn:hover { background: #2563eb; transform: translateY(-2px); }
+    #status { font-size: 0.8rem; color: #64748b; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="icon">📡</span>
+    <h1>Sin Conexión</h1>
+    <p>No se puede conectar con la plataforma. Verifica tu internet e intenta nuevamente.</p>
+
+    <div class="badge">⚠️ Modo Offline Activo</div>
+
+    <div class="tip">
+      <h3>🛡️ ¿Tienes una emergencia vehicular?</h3>
+      <p>Al recuperar la conexión, tus solicitudes guardadas se sincronizarán automáticamente. Mientras tanto, llama al técnico directamente.</p>
+    </div>
+
+    <button class="btn" onclick="location.reload()">
+      🔄 Reintentar Conexión
+    </button>
+    <p id="status">Verificando conexión...</p>
+  </div>
+
+  <script>
+    // Auto-reintentar cada 5 segundos
+    setInterval(() => {
+      if (navigator.onLine) {
+        document.getElementById('status').textContent = '✅ Conexión recuperada. Redirigiendo...';
+        setTimeout(() => location.href = '/', 1000);
+      } else {
+        document.getElementById('status').textContent = `Sin conexión · ${new Date().toLocaleTimeString()}`;
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

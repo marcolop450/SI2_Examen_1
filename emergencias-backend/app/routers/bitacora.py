@@ -22,6 +22,9 @@ router = APIRouter(prefix="/bitacora", tags=["CU21 - Bitácora de Trazabilidad"]
 # CU21: OBTENER BITÁCORA COMPLETA DE UN INCIDENTE - Ciclo 5 - CU21
 # Devuelve la línea de tiempo con todos los eventos cronológicos
 # ===================================================================
+# Descripción: Obtener la bitácora completa de un incidente
+# Ciclo: Ciclo 5
+# CU: CU21
 @router.get("/{incidente_id}", response_model=List[BitacoraOut])
 def obtener_bitacora(
     incidente_id: int,

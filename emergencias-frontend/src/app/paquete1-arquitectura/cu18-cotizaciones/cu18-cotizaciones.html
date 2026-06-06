@@ -1,79 +1,153 @@
+<!-- // Pantalla de Cotizaciones - Ciclo 5 - CU18 -->
+<!-- Taller selecciona técnico especializado y envía propuesta al cliente -->
 <div class="layout-principal">
   <div class="contenido-derecha">
 
+    <!-- HEADER -->
     <div class="header-seccion">
       <div>
-        <h1 class="titulo-pagina">Cotizaciones (CU18)</h1>
-        <p class="subtitulo-pagina">Enviá tu propuesta económica a los incidentes pendientes.</p>
+        <h1 class="titulo-pagina">💰 Gestión de Cotizaciones</h1>
+        <p class="subtitulo-pagina">Seleccioná un técnico especializado y enviá tu propuesta al cliente.</p>
       </div>
       <button class="btn-refrescar" (click)="cargarIncidentes()">🔄 Actualizar</button>
     </div>
 
-    <div *ngIf="incidentesPendientes.length === 0" class="estado-vacio">
-      <span style="font-size:48px">📋</span>
-      <h2>Sin incidentes pendientes</h2>
-      <p>No hay solicitudes esperando cotización en este momento.</p>
+    <!-- CARGANDO -->
+    <div *ngIf="cargando" class="estado-vacio">
+      <div class="spinner"></div>
+      <p>Cargando solicitudes...</p>
     </div>
 
-    <div class="grid-tarjetas">
-      <div class="card-emergencia" *ngFor="let inc of incidentesPendientes">
+    <!-- VACÍO -->
+    <div *ngIf="!cargando && incidentesPendientes.length === 0" class="estado-vacio">
+      <span style="font-size:56px">📋</span>
+      <h2>Sin solicitudes pendientes</h2>
+      <p>No hay emergencias esperando cotización en este momento.</p>
+      <p style="font-size:12px;color:#94a3b8;margin-top:8px">
+        Las emergencias aparecen aquí cuando un cliente necesita un especialista de tu taller.
+      </p>
+    </div>
 
+    <!-- GRID DE INCIDENTES PARA COTIZAR -->
+    <div class="grid-tarjetas" *ngIf="!cargando && incidentesPendientes.length > 0">
+
+      <div class="card-cotizacion" *ngFor="let inc of incidentesPendientes">
+
+        <!-- HEADER: Prioridad + Categoría IA -->
         <div class="card-header">
-          <span class="badge-prioridad" [ngClass]="'prioridad-' + (inc.prioridad_enum || 'incierto')">
-            {{ (inc.prioridad_enum || 'incierto') | uppercase }}
-          </span>
-          <span class="fecha">
-            {{ inc.fecha_creacion_timestamp | date:'shortTime' }}
-          </span>
+          <div class="header-left">
+            <span class="badge-prioridad" [ngClass]="'prioridad-' + (inc.prioridad_enum || 'incierto')">
+              {{ (inc.prioridad_enum || 'incierto') | uppercase }}
+            </span>
+            <span class="badge-categoria">
+              {{ getCategoriaIcono(inc) }} {{ extraerCategoria(inc) | titlecase }}
+            </span>
+          </div>
+          <span class="badge-id">#{{ inc.id_incidente }}</span>
         </div>
 
+        <!-- AVISO SI NO HAY ESPECIALISTA -->
+        <div class="alerta-sin-especialista" *ngIf="!tieneEspecialista(inc)">
+          ⚠️ Tu taller no tiene un técnico especializado en
+          <strong>{{ extraerCategoria(inc) }}</strong> disponible.
+          Puedes cotizar igual con un técnico general.
+        </div>
+
+        <!-- DIAGNÓSTICO IA -->
+        <div class="diagnostico-ia-box">
+          <span class="ia-icono">{{ getCategoriaIcono(inc) }}</span>
+          <div class="ia-texto">
+            <span class="ia-titulo">Diagnóstico IA</span>
+            <p class="ia-descripcion">
+              {{ inc.evidencias?.[0]?.clasificacion_ia_texto || 'Procesando diagnóstico...' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- CUERPO: Descripción + Mapa -->
         <div class="card-body">
-          <h3 class="diagnostico">Incidente #{{ inc.id_incidente }}</h3>
-          <p class="descripcion">
-            "{{ inc.descripcion_texto || 'Sin descripción del cliente.' }}"
+          <p class="descripcion-cliente" *ngIf="inc.descripcion_texto">
+            💬 "{{ inc.descripcion_texto }}"
           </p>
-          <div class="ubicacion">
-            <a href="https://www.google.com/maps/search/?api=1&query={{ inc.latitud_emergencia }},{{ inc.longitud_emergencia }}"
-               target="_blank"
-               style="color:#E24B4A; text-decoration:none; font-weight:bold;">
+          <div class="ubicacion-row">
+            <a [href]="'https://www.google.com/maps/search/?api=1&query=' + inc.latitud_emergencia + ',' + inc.longitud_emergencia"
+               target="_blank" class="link-mapa">
               🗺️ Ver ubicación en Maps
             </a>
+            <span class="fecha-hora">{{ inc.fecha_creacion_timestamp | date:'HH:mm' }}</span>
+          </div>
+        </div>
+
+        <!-- FORMULARIO DE COTIZACIÓN CON TÉCNICO -->
+        <div class="cotizacion-form">
+
+          <!-- SELECCIÓN DE TÉCNICO ESPECIALIZADO - #Ciclo5 CU18 -->
+          <div class="form-grupo">
+            <label class="form-label">
+              🔧 Técnico a despachar
+              <span class="label-hint" *ngIf="tieneEspecialista(inc)">
+                — mostrando especialistas en {{ extraerCategoria(inc) }}
+              </span>
+              <span class="label-hint sin-esp" *ngIf="!tieneEspecialista(inc)">
+                — sin especialistas, mostrando todos
+              </span>
+            </label>
+            <select class="form-select"
+                    [(ngModel)]="formularios[inc.id_incidente].tecnico_id"
+                    [class.select-error]="!formularios[inc.id_incidente]?.tecnico_id">
+              <option [ngValue]="null" disabled selected>-- Seleccionar técnico --</option>
+              <option *ngFor="let tec of tecnicosFiltrados[inc.id_incidente] || tecnicosDisponibles"
+                      [ngValue]="tec.id_tecnico">
+                {{ tec.nombre }} · {{ tec.especialidad || 'Mecánico General' }}
+              </option>
+            </select>
+            <p class="form-hint" *ngIf="(tecnicosFiltrados[inc.id_incidente] || []).length === 0">
+              ⚠️ No tienes técnicos disponibles en este momento.
+            </p>
           </div>
 
-          <!-- Formulario de cotización -->
-          <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
-            <label style="font-size:12px; font-weight:600; color:#334155;">
-              Precio estimado (Bs.)
-            </label>
-            <input type="number"
-                   [(ngModel)]="formularios[inc.id_incidente].precio_estimado"
-                   placeholder="Ej: 150"
-                   style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;">
+          <!-- PRECIO -->
+          <div class="form-row">
+            <div class="form-grupo">
+              <label class="form-label">💵 Precio estimado (Bs.)</label>
+              <input type="number"
+                     class="form-input"
+                     [(ngModel)]="formularios[inc.id_incidente].precio_estimado"
+                     placeholder="Ej: 150"
+                     min="1">
+            </div>
+            <div class="form-grupo">
+              <label class="form-label">⏱ Tiempo estimado (min)</label>
+              <input type="number"
+                     class="form-input"
+                     [(ngModel)]="formularios[inc.id_incidente].tiempo_estimado_min"
+                     placeholder="Ej: 30"
+                     min="1">
+            </div>
+          </div>
 
-            <label style="font-size:12px; font-weight:600; color:#334155;">
-              Tiempo estimado de llegada (minutos)
-            </label>
-            <input type="number"
-                   [(ngModel)]="formularios[inc.id_incidente].tiempo_estimado_min"
-                   placeholder="Ej: 30"
-                   style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;">
-
-            <label style="font-size:12px; font-weight:600; color:#334155;">
-              Detalle de la propuesta
-            </label>
-            <textarea [(ngModel)]="formularios[inc.id_incidente].descripcion"
-                      placeholder="Ej: Incluye grúa y revisión inicial"
-                      rows="2"
-                      style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; resize:none;">
+          <!-- DESCRIPCIÓN -->
+          <div class="form-grupo">
+            <label class="form-label">📝 Detalle de la propuesta</label>
+            <textarea class="form-textarea"
+                      [(ngModel)]="formularios[inc.id_incidente].descripcion"
+                      placeholder="Ej: Cambio de llanta con balanceo incluido. Grúa disponible."
+                      rows="2">
             </textarea>
           </div>
         </div>
 
+        <!-- FOOTER: Botón enviar -->
         <div class="card-footer">
-          <button class="btn-aceptar"
-                  style="width:100%"
+          <a [routerLink]="['/bitacora', inc.id_incidente]" class="btn-bitacora">
+            📜 Bitácora
+          </a>
+          <button class="btn-enviar"
+                  [disabled]="!formularios[inc.id_incidente]?.tecnico_id ||
+                              !formularios[inc.id_incidente]?.precio_estimado ||
+                              !formularios[inc.id_incidente]?.tiempo_estimado_min"
                   (click)="enviarCotizacion(inc.id_incidente)">
-            💰 Enviar Propuesta
+            💰 Enviar Cotización
           </button>
         </div>
 

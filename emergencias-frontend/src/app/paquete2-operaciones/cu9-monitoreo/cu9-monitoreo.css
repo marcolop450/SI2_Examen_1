@@ -1,54 +1,110 @@
-/* Heredamos tu estructura de layout */
-.layout-principal { display: flex; min-height: 100vh; background-color: #f8fafc; }
-.contenido-derecha { flex: 1; padding: 24px; }
+/* Monitoreo de Servicios - Ciclo 5 - CU9 */
+.layout-principal  { display: flex; min-height: 100vh; background: var(--bg-page, #eef1f8); }
+.contenido-derecha { flex: 1; padding: 28px; font-family: 'DM Sans', sans-serif; overflow-y: auto; }
 
-.titulo-pagina { font-size: 26px; color: #0f172a; margin: 0; font-weight: 700; }
-.subtitulo-pagina { color: #64748b; font-size: 14px; margin-bottom: 30px; }
+/* ── HEADER ──────────────────────────────────────────────── */
+.header-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+.titulo-pagina  { font-size: 1.6rem; color: #0f172a; margin: 0 0 4px; font-weight: 700; }
+.subtitulo-pagina { color: #64748b; font-size: 0.875rem; margin: 0; }
+.btn-refrescar  { background: white; border: 1px solid #cbd5e1; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+.btn-refrescar:hover { background: #f1f5f9; }
 
-/* Grid de monitoreo responsivo */
-.grid-monitoreo { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-  gap: 24px; 
-}
+/* ── SPINNER ─────────────────────────────────────────────── */
+.spinner { width: 36px; height: 36px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Tarjeta de seguimiento */
-.card-seguimiento { 
-  background: white; border-radius: 16px; border: 1px solid #e2e8f0; 
-  overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-  display: flex; flex-direction: column;
-}
+/* ── ESTADO VACÍO ────────────────────────────────────────── */
+.estado-vacio { text-align: center; padding: 80px 20px; color: #64748b; }
+.estado-vacio h2 { color: #334155; margin: 12px 0 8px; }
 
-.status-bar { 
-  background: #3b82f6; color: white; padding: 6px; 
-  text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 1px;
-}
+/* ── GRID ────────────────────────────────────────────────── */
+.grid-monitoreo { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
 
-.info-body { padding: 20px; flex-grow: 1; }
-.info-body h3 { margin: 0 0 15px 0; color: #1e293b; font-size: 18px; }
-.info-body p { margin: 5px 0; font-size: 14px; color: #475569; }
-
-/* Contenedor del Mapa Real */
-.contenedor-mapa {
-  width: 100%;
-  height: 220px;
-  margin-top: 15px;
-  border-radius: 12px;
-  overflow: hidden;
+/* ── CARD ────────────────────────────────────────────────── */
+.card-seguimiento {
+  background: white;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+/* ── STATUS BAR ──────────────────────────────────────────── */
+.status-bar {
+  padding: 10px 16px;
+  font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  text-align: center;
+}
+.estado-asignado  { background: #dbeafe; color: #1d4ed8; }
+.estado-en-camino { background: #fef9c3; color: #854d0e; }
+.estado-atendiendo { background: #dcfce7; color: #15803d; animation: pulseBg 2s infinite; }
+@keyframes pulseBg { 0%,100%{opacity:1} 50%{opacity:0.75} }
+
+/* ── INFO BODY ───────────────────────────────────────────── */
+.info-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; }
+
+.card-titulo-row { display: flex; justify-content: space-between; align-items: center; }
+.card-titulo-row h3 { margin: 0; font-size: 1.05rem; color: #0f172a; font-weight: 700; }
+
+.badge-prioridad { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
+.prioridad-alta    { background: #fee2e2; color: #991b1b; }
+.prioridad-media   { background: #fef3c7; color: #92400e; }
+.prioridad-baja    { background: #d1fae5; color: #065f46; }
+.prioridad-incierto { background: #e2e8f0; color: #475569; }
+
+/* ── TÉCNICO INFO - #Ciclo5 CU18 ───────────────────────── */
+.tecnico-info {
+  display: flex; align-items: center; gap: 12px;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 10px; padding: 12px;
+}
+.tecnico-avatar { font-size: 1.5rem; }
+.tecnico-nombre { margin: 0; font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+.tecnico-esp    { margin: 2px 0 0; font-size: 0.75rem; color: #64748b; }
+.tecnico-estado { margin-left: auto; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+.gps-on  { color: #15803d; }
+.gps-off { color: #94a3b8; }
+
+.sin-tecnico {
+  background: #fef9c3; border: 1px solid #fde047;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 0.82rem; color: #92400e;
 }
 
-.acciones { padding: 15px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; }
+.desc-incidente { font-size: 0.85rem; color: #475569; font-style: italic; margin: 0; }
 
-.btn-finalizar { 
-  width: 100%; background: #10b981; color: white; border: none; 
-  padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; 
-  transition: 0.2s;
+/* ── MAPA ────────────────────────────────────────────────── */
+.map-container { border: 2px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+
+/* ── ACCIONES ────────────────────────────────────────────── */
+.card-acciones { padding: 14px 18px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
+
+.btn-bitacora {
+  background: #0f172a; color: white; text-decoration: none;
+  padding: 9px 16px; border-radius: 8px; font-size: 0.8rem;
+  font-weight: 600; transition: 0.2s; white-space: nowrap;
 }
-.btn-finalizar:hover { background: #059669; transform: translateY(-2px); }
+.btn-bitacora:hover { background: #1e293b; }
 
-/* Estado vacío */
-.estado-vacio { 
-  text-align: center; padding: 100px 20px; color: #64748b; 
-  background: white; border: 2px dashed #e2e8f0; border-radius: 16px; 
+.btn-finalizar {
+  flex: 1; background: linear-gradient(135deg, #10b981, #059669);
+  color: white; border: none;
+  padding: 9px 16px; border-radius: 8px; font-size: 0.875rem;
+  font-weight: 700; cursor: pointer; transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+}
+.btn-finalizar:hover { background: linear-gradient(135deg,#059669,#047857); transform: translateY(-1px); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contenido-derecha { padding: 16px; }
+  .grid-monitoreo { grid-template-columns: 1fr; }
+  .header-seccion { flex-direction: column; align-items: flex-start; }
+  .btn-refrescar { width: 100%; text-align: center; }
+  .card-acciones { flex-wrap: wrap; }
+  .btn-finalizar, .btn-bitacora { flex: 1; text-align: center; }
 }

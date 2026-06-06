@@ -9,6 +9,7 @@ class Cotizacion(Base):
     id_cotizacion       = Column(Integer, primary_key=True, index=True)
     incidente_id        = Column(Integer, ForeignKey("incidentes.id_incidente"), nullable=False)
     taller_id           = Column(Integer, ForeignKey("talleres.id_taller"), nullable=False)
+    tecnico_id          = Column(Integer, ForeignKey("tecnicos.id_tecnico"), nullable=True)  # #Ciclo5 CU18 Técnico especializado asignado
     precio_estimado     = Column(DECIMAL(10, 2), nullable=False)
     tiempo_estimado_min = Column(Integer, nullable=False)
     descripcion         = Column(Text, nullable=True)
@@ -19,3 +20,4 @@ class Cotizacion(Base):
 
     incidente = relationship("Incidente", backref="cotizaciones")
     taller    = relationship("Taller", backref="cotizaciones")
+    tecnico   = relationship("Tecnico", backref="cotizaciones")  # #Ciclo5 CU18

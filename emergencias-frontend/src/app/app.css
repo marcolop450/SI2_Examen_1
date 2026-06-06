@@ -1,4 +1,51 @@
+/* #Ciclo5 CU19 - Banner de conectividad PWA Offline */
+.banner-offline {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: linear-gradient(90deg, #7f1d1d, #991b1b);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s ease;
+}
+
+.banner-offline .banner-icon { font-size: 1.1rem; animation: pulse 2s infinite; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* #Ciclo5 CU19 - Banner de sincronización exitosa */
+.banner-sync-ok {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: linear-gradient(90deg, #064e3b, #065f46);
+  color: #6ee7b7;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s ease, fadeOut 0.5s ease 3.5s forwards;
+}
+
+@keyframes slideDown { from{transform:translateY(-100%)} to{transform:translateY(0)} }
+@keyframes fadeOut { to{opacity:0; transform:translateY(-100%)} }
+
+/* Empujar el layout hacia abajo cuando el banner offline está visible */
+body:has(.banner-offline) .layout-global,
+body:has(.banner-sync-ok) .layout-global {
+  margin-top: 42px;
+  height: calc(100vh - 42px);
+}
+
 .layout-global {
+
   display: flex;
   height: 100vh;
   width: 100%;          /* ← cambiá 100vw por 100% */

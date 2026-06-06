@@ -23,6 +23,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "service-worker.js",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [

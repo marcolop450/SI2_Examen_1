@@ -41,6 +41,9 @@ ESTADOS_ACTIVOS = [
 ESTADOS_FINALIZADOS = [EstadoIncidente.atendido, EstadoIncidente.finalizado]
 
 
+# Descripción: Obtiene el taller del usuario si no es admin
+# Ciclo: Ciclo 5
+# CU: CU22
 def _get_taller_usuario(db: Session, user: Usuario):
     """Obtiene el taller del usuario si es rol taller - Ciclo 5 - CU22"""
     if user.rol == TipoRol.admin:
@@ -52,6 +55,9 @@ def _get_taller_usuario(db: Session, user: Usuario):
 # ===================================================================
 # CU22: RESUMEN DE KPIs PRINCIPALES - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Resumen general de KPIs
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/resumen", response_model=KpiResumen)
 def obtener_resumen_kpis(
     db: Session = Depends(get_db),
@@ -124,6 +130,9 @@ def obtener_resumen_kpis(
 # ===================================================================
 # CU22: INCIDENTES POR MES (últimos 6 meses) - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Incidentes agrupados por mes
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/incidentes-por-mes", response_model=List[IncidentesPorMes])
 def incidentes_por_mes(
     db: Session = Depends(get_db),
@@ -155,6 +164,9 @@ def incidentes_por_mes(
 # ===================================================================
 # CU22: DISTRIBUCIÓN POR ESTADO - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Distribución de incidentes por estado
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/por-estado", response_model=List[DistribucionEstado])
 def distribucion_por_estado(
     db: Session = Depends(get_db),
@@ -185,6 +197,9 @@ def distribucion_por_estado(
 # ===================================================================
 # CU22: DISTRIBUCIÓN POR PRIORIDAD - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Distribución de incidentes por prioridad
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/por-prioridad", response_model=List[DistribucionPrioridad])
 def distribucion_por_prioridad(
     db: Session = Depends(get_db),
@@ -213,6 +228,9 @@ def distribucion_por_prioridad(
 # ===================================================================
 # CU22: RANKING DE TALLERES (solo admin) - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Ranking de los mejores talleres
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/talleres-ranking", response_model=List[TallerRanking])
 def ranking_talleres(
     db: Session = Depends(get_db),
@@ -249,6 +267,9 @@ def ranking_talleres(
 # ===================================================================
 # CU22: TIEMPO PROMEDIO DE RESPUESTA - Ciclo 5 - CU22
 # ===================================================================
+# Descripción: Tiempo promedio de respuesta global
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/tiempo-respuesta")
 def tiempo_respuesta(
     db: Session = Depends(get_db),
@@ -285,6 +306,9 @@ def tiempo_respuesta(
 # #Ciclo5 CU22 TIEMPO PROMEDIO DE ASIGNACIÓN - Enunciado obligatorio
 # Tiempo entre reporte y taller asignado
 # ===================================================================
+# Descripción: Tiempo promedio de asignación de taller
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/tiempo-asignacion")
 def tiempo_asignacion(
     db: Session = Depends(get_db),
@@ -316,6 +340,9 @@ def tiempo_asignacion(
 # #Ciclo5 CU22 TIEMPO PROMEDIO DE LLEGADA - Enunciado obligatorio
 # Tiempo entre taller asignado y en_atencion (llegada del técnico)
 # ===================================================================
+# Descripción: Tiempo promedio de llegada del técnico
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/tiempo-llegada")
 def tiempo_llegada(
     db: Session = Depends(get_db),
@@ -351,6 +378,9 @@ def tiempo_llegada(
 # #Ciclo5 CU22 INCIDENTES POR TIPO - Enunciado obligatorio
 # Batería, llanta, motor, choque, otros (de clasificación IA)
 # ===================================================================
+# Descripción: Cantidad de incidentes agrupados por tipo
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/por-tipo")
 def incidentes_por_tipo(
     db: Session = Depends(get_db),
@@ -387,6 +417,9 @@ def incidentes_por_tipo(
 # #Ciclo5 CU22 ZONAS CON MÁS INCIDENTES - Enunciado obligatorio
 # Agrupa por coordenadas redondeadas para simular clusters
 # ===================================================================
+# Descripción: Top 5 zonas con más incidentes
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/zonas-incidentes")
 def zonas_incidentes(
     db: Session = Depends(get_db),
@@ -421,6 +454,9 @@ def zonas_incidentes(
 # #Ciclo5 CU22 NIVEL DE CUMPLIMIENTO SLA - Enunciado obligatorio
 # % de incidentes atendidos dentro del tiempo esperado (60 min)
 # ===================================================================
+# Descripción: Porcentaje de cumplimiento del SLA
+# Ciclo: Ciclo 5
+# CU: CU22
 @router.get("/sla")
 def cumplimiento_sla(
     db: Session = Depends(get_db),

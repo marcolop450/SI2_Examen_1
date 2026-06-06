@@ -1,14 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>EmergenciasFrontend</title>
+  <title>Plataforma de Emergencias Vehiculares</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistema inteligente de atención de emergencias vehiculares con IA, geolocalización y tiempo real">
+  <meta name="theme-color" content="#3b82f6">
+  <!-- #Ciclo5 CU19 PWA Manifest -->
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <app-root></app-root>
+  <!-- #Ciclo5 CU19 - Registrar Service Worker para PWA Offline -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(reg) { console.log('[PWA] SW registrado:', reg.scope); })
+          .catch(function(err) { console.warn('[PWA] SW no registrado:', err); });
+      });
+    }
+  </script>
 </body>
 </html>
+

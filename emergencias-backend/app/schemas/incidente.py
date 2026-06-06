@@ -76,13 +76,41 @@ class IncidenteOut(BaseModel):
     descripcion_texto:        Optional[str] = None
     latitud_emergencia:       Decimal
     longitud_emergencia:      Decimal
+    latitud_tecnico:          Optional[Decimal] = None   # #Ciclo5 GPS técnico
+    longitud_tecnico:         Optional[Decimal] = None   # #Ciclo5 GPS técnico
+    costo_final_decimal:      Optional[Decimal] = None   # #Ciclo5 Para el pago
     fecha_creacion_timestamp: datetime
-    
+    uuid_offline:             Optional[str] = None       # #Ciclo5 CU19 dedup offline
+
     # Anidamos las evidencias
     evidencias:               List[EvidenciaOut] = []
-    
+
     # El historial para que Angular sepa de quién es el turno
-    historial:                List[HistorialOut] = [] 
+    historial:                List[HistorialOut] = []
+
+    # #Ciclo5 CU18 - Nombre del técnico asignado (JOIN en el endpoint)
+    nombre_tecnico:           Optional[str] = None
+    especialidad_tecnico:     Optional[str] = None
+    precio_cotizacion:        Optional[float] = None   # #Ciclo5 Precio de la cotización aceptada
+
+    # #Ciclo5 CU25 - Categoría IA derivada de la primera evidencia (para consejos y especialidad)
+    @property
+    def categoria_ia(self) -> Optional[str]:
+        import re
+        for ev in self.evidencias:
+            if ev.clasificacion_ia_texto:
+                m = re.search(r'\[(\w+)\]', ev.clasificacion_ia_texto)
+                if m:
+                    return m.group(1).lower()
+        return None
+
+    # #Ciclo5 CU25 - Diagnóstico completo de la IA para mostrar al móvil
+    @property
+    def diagnostico_ia(self) -> Optional[str]:
+        for ev in self.evidencias:
+            if ev.clasificacion_ia_texto:
+                return ev.clasificacion_ia_texto
+        return None
 
     class Config:
-        from_attributes = True
+        from_attributes = True

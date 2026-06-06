@@ -32,7 +32,9 @@ def crear_notificacion_interna(db: Session, usuario_id: int, titulo: str, mensaj
         mensaje    = mensaje
     )
     db.add(notif)
-    
+    db.commit()      # ← AGREGAR
+    db.refresh(notif)  # ← AGREGAR
+    return notif
 
 # -------------------------------------------------------
 # GET /notificaciones/mis-notificaciones
@@ -89,3 +91,42 @@ def marcar_leida(
     db.commit()
     db.refresh(notif)
     return notif
+
+
+# -------------------------------------------------------
+# PATCH /notificaciones/leer-todas
+# Marcar TODAS las notificaciones del usuario como leídas
+# El móvil llama esto cuando el usuario abre el panel de alertas
+# -------------------------------------------------------
+@router.patch("/leer-todas")
+def marcar_todas_leidas(
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    # #Ciclo5 CU15 - Marcar todas como leídas de una vez
+    db.query(Notificacion).filter(
+        Notificacion.usuario_id == current_user.id_usuario,
+        Notificacion.leido_boolean == False
+    ).update({"leido_boolean": True})
+    db.commit()
+    return {"mensaje": "Todas las notificaciones marcadas como leídas."}
+
+
+# -------------------------------------------------------
+# DELETE /notificaciones/{id}
+# Eliminar una notificación individual
+# -------------------------------------------------------
+@router.delete("/{id_notificacion}", status_code=204)
+def eliminar_notificacion(
+    id_notificacion: int,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    notif = db.query(Notificacion).filter(
+        Notificacion.id_notificacion == id_notificacion,
+        Notificacion.usuario_id == current_user.id_usuario
+    ).first()
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notificación no encontrada")
+    db.delete(notif)
+    db.commit()

@@ -58,6 +58,9 @@ gestor = GestorSalas()
 # ENDPOINT WEBSOCKET — Sala del incidente
 # URL: ws://localhost:8000/ws/incidente/{incidente_id}
 # ============================================================
+# Descripción: Abre una conexión de socket bidireccional para seguimiento de incidentes en tiempo real
+# Ciclo: Ciclo 4
+# CU: CU17
 @router.websocket("/incidente/{incidente_id}")
 async def sala_incidente(
     ws: WebSocket,
