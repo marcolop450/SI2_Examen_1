@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class NotificacionService {
-  private apiUrl = 'https://backend-ixkv.onrender.com/notificaciones';
+  private apiUrl = 'http://localhost:8000/notificaciones';
 
   constructor(private http: HttpClient) {}
 

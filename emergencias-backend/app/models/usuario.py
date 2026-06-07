@@ -11,6 +11,7 @@ class TipoRol(str, enum.Enum):
     taller     = "taller"
     tecnico    = "tecnico"
     admin      = "admin"
+    admin_red  = "admin_red"
 
 
 class Usuario(Base):

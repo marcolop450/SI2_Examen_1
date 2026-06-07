@@ -39,3 +39,5 @@ class TallerRanking(BaseModel):
     nombre: str
     servicios_completados: int = 0
     calificacion_promedio: float = 0.0
+    ingresos_totales: float = 0.0
+

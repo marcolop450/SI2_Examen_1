@@ -29,7 +29,7 @@ export class Sidebar implements OnInit {
     // --- LECTURA DE SESIÓN SaaS ---
     this.tenantId = localStorage.getItem('tenant_id');
     this.esSuperAdmin = this.rolUsuario === 'admin';
-    this.esTenantOwner = this.rolUsuario === 'taller' && this.tenantId !== null && this.tenantId !== 'null' && this.tenantId !== 'undefined';
+    this.esTenantOwner = this.rolUsuario === 'admin_red';
   }
   
   toggleSidebar() {

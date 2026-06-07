@@ -78,8 +78,9 @@ def crear_tecnico(
     # 4. CREAR TECNICO (Usamos el taller.id_taller REAL que encontramos)
     nuevo_tecnico = Tecnico(
         taller_id=taller.id_taller,
+        tenant_id=taller.tenant_id,
         usuario_id=nuevo_usuario.id_usuario,
-        nombre=datos.nombre, # 👈 AGREGA ESTA LÍNEA
+        nombre=datos.nombre,
         especialidad=datos.especialidad,
         disponible_boolean=datos.disponible_boolean
     )

@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from uuid import UUID
 from typing import Optional
+from datetime import datetime, timedelta
 from app.database import get_db
 from app.models.usuario import Usuario, TipoRol # 👈 Añadido TipoRol
 from app.models.taller import Taller
@@ -104,6 +105,57 @@ def get_current_user(
 
 
 # -------------------------------------------------------
+# POST /auth/registrar-tenant
+# Registro B2B de una nueva empresa SaaS
+# -------------------------------------------------------
+from app.schemas.saas import TenantRegisterRequest
+from app.models.saas import Tenant, Suscripcion
+from app.utils.security import hash_password
+
+@router.post("/registrar-tenant", status_code=status.HTTP_201_CREATED)
+def registrar_tenant(datos: TenantRegisterRequest, db: Session = Depends(get_db)):
+    # 1. Verificar si el email o el subdominio ya existen
+    if db.query(Usuario).filter(Usuario.email == datos.usuario.email).first():
+        raise HTTPException(status_code=400, detail="El email ya está registrado.")
+    if db.query(Tenant).filter(Tenant.subdominio == datos.tenant.subdominio).first():
+        raise HTTPException(status_code=400, detail="El subdominio ya está en uso.")
+
+    # 2. Crear Tenant
+    nuevo_tenant = Tenant(
+        nombre=datos.tenant.nombre_comercial,
+        subdominio=datos.tenant.subdominio,
+        nit=f"NIT-{datos.tenant.subdominio}"
+    )
+    db.add(nuevo_tenant)
+    db.flush()
+
+    # 3. Crear Usuario Dueño (admin_red)
+    nuevo_usuario = Usuario(
+        nombre=datos.usuario.nombre,
+        email=datos.usuario.email,
+        password_hash=hash_password(datos.usuario.password),
+        telefono=datos.usuario.telefono,
+        rol=TipoRol.admin_red,
+        tenant_id=nuevo_tenant.id_tenant
+    )
+    db.add(nuevo_usuario)
+    db.flush()
+
+    # 4. Crear la Suscripción (si hay plan)
+    if datos.tenant.plan_id:
+        nueva_suscripcion = Suscripcion(
+            tenant_id=nuevo_tenant.id_tenant,
+            plan_id=datos.tenant.plan_id,
+            fecha_vencimiento=datetime.now() + timedelta(days=30),
+            transaccion_pago_simulado="PAYPAL_WEB"
+        )
+        db.add(nueva_suscripcion)
+
+    db.commit()
+    return {"message": "Empresa SaaS registrada exitosamente"}
+
+
+# -------------------------------------------------------
 # Dependencia reutilizable: obtener el tenant_id autenticado
 # -------------------------------------------------------
 def get_current_tenant(
@@ -114,8 +166,8 @@ def get_current_tenant(
     if current_user.rol in [TipoRol.admin, TipoRol.cliente]:
         return None
 
-    # Regla de Negocio 2: Taller o Técnico deben poseer obligatoriamente un tenant_id válido
-    if current_user.rol in [TipoRol.taller, TipoRol.tecnico]:
+    # Regla de Negocio 2: Taller, Técnico o Admin_red deben poseer obligatoriamente un tenant_id válido
+    if current_user.rol in [TipoRol.taller, TipoRol.tecnico, TipoRol.admin_red]:
         if not current_user.tenant_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

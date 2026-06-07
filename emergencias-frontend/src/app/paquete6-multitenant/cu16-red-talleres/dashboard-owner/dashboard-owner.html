@@ -50,10 +50,18 @@
     <div class="talleres-grid">
       <div *ngFor="let taller of talleres" class="taller-card">
         <div class="taller-card-header">
-          <strong>{{ taller.nombre }}</strong>
-          <span class="badge-operativo">{{ taller.estado }}</span>
+          <strong>{{ taller.nombre_taller }}</strong>
+          <span class="badge-operativo">Activo</span>
         </div>
-        <p class="taller-direccion">📍 {{ taller.direccion }}</p>
+        <p class="taller-direccion">📍 {{ taller.direccion || 'Sin dirección registrada' }}</p>
+        <div class="taller-gerente">
+          <p class="gerente-nombre">👤 {{ taller.nombre_dueno }}</p>
+          <p class="gerente-email">📧 {{ taller.email_dueno }}</p>
+        </div>
+        <div class="taller-card-footer">
+          <span class="taller-revenue-label">Ingresos Generados</span>
+          <span class="taller-revenue">{{ taller.ingresos_totales | number:'1.0-0' }} Bs.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -62,15 +70,103 @@
   <div class="acciones-grid">
     <button class="btn-accion btn-primary"
             [disabled]="limiteAlcanzado"
-            routerLink="/registro-b2b">
+            (click)="toggleFormulario()">
       🏪 Registrar Nueva Sucursal
     </button>
-    <button class="btn-accion btn-secondary" routerLink="/talleres">
-      📋 Ver Operaciones
+    <button class="btn-accion btn-secondary" routerLink="/kpis">
+      📊 Ver Analítica
     </button>
-    <button class="btn-accion btn-secondary" routerLink="/planes">
-      📊 Cambiar de Plan
-    </button>
+  </div>
+
+  <!-- ========== FORMULARIO DE NUEVA SUCURSAL ========== -->
+  <div *ngIf="mostrarFormulario" class="form-sucursal-container" style="margin-top: 3rem; background: #ffffff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; animation: fadeIn 0.4s ease-out;">
+    <h2 style="font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Registrar Nueva Sucursal</h2>
+    <p style="color: #64748b; font-size: 1rem; margin-bottom: 2rem;">Añade una nueva ubicación física a tu red y genera el acceso para su gerente.</p>
+    
+    <div *ngIf="mensajeExito" class="alert alert-success" style="margin-bottom: 1.5rem; color: #166534; background: #dcfce7; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #166534; font-weight: 500;">
+      ✅ {{ mensajeExito }}
+    </div>
+    <div *ngIf="mensajeError" class="alert alert-error" style="margin-bottom: 1.5rem; color: #991b1b; background: #fee2e2; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #991b1b; font-weight: 500;">
+      ⚠️ {{ mensajeError }}
+    </div>
+
+    <form [formGroup]="tallerForm" (ngSubmit)="crearSucursal()">
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+        
+        <!-- Bloque Izquierdo: Taller -->
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <h3 style="font-size: 1.2rem; font-weight: 600; color: #1e293b; margin-top: 0; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.4rem;">📍</span> Datos de la Ubicación
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Nombre del Taller *</label>
+              <input type="text" formControlName="nombre_taller" placeholder="Ej: Sucursal Norte" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; transition: all 0.2s; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">NIT Comercial</label>
+              <input type="text" formControlName="nit" placeholder="Ej: 1234567" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Dirección Física</label>
+              <input type="text" formControlName="direccion" placeholder="Ej: Av. Banzer 4to anillo" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Latitud</label>
+              <input type="number" step="any" formControlName="latitud_decimal" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #f1f5f9;">
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+              <div style="flex: 1;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Longitud</label>
+                <input type="number" step="any" formControlName="longitud_decimal" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #f1f5f9;">
+              </div>
+              <button type="button" (click)="obtenerUbicacionGPS()" style="height: 42px; padding: 0 1rem; background: #0f172a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='#0f172a'">
+                GPS Automático
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque Derecho: Administrador -->
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <h3 style="font-size: 1.2rem; font-weight: 600; color: #1e293b; margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.4rem;">👤</span> Cuenta del Gerente
+          </h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0; margin-bottom: 1.2rem;">
+            Credenciales exclusivas para el encargado de esta sucursal.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Nombre Completo *</label>
+              <input type="text" formControlName="nombre_dueno" placeholder="Ej: Carlos Pinto" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Teléfono de Contacto</label>
+              <input type="text" formControlName="telefono" placeholder="Ej: +591 70012345" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Correo Electrónico (Login) *</label>
+              <input type="email" formControlName="email" placeholder="gerente@sucursal.com" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Contraseña de Acceso *</label>
+              <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+        <button type="submit" [disabled]="enviando || tallerForm.invalid" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 0.8rem 2rem; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          {{ enviando ? 'Validando y Guardando...' : 'Registrar Sucursal y Generar Acceso' }}
+        </button>
+        <button type="button" (click)="toggleFormulario()" style="background: #f1f5f9; color: #475569; padding: 0.8rem 2rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+          Cancelar Operación
+        </button>
+      </div>
+
+    </form>
   </div>
 
 </section>

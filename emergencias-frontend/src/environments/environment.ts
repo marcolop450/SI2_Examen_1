@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://backend-ixkv.onrender.com'
+  apiUrl: 'http://localhost:8000'
 };

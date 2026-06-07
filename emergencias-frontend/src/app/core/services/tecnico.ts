@@ -7,7 +7,7 @@ import { TecnicoOut, TecnicoCreate, TecnicoPartial } from '../../shared/models/t
   providedIn: 'root'
 })
 export class TecnicoService {
-  private apiUrl = 'https://backend-ixkv.onrender.com/tecnicos'; 
+  private apiUrl = 'http://localhost:8000/tecnicos'; 
 
   constructor(private http: HttpClient) {}
 

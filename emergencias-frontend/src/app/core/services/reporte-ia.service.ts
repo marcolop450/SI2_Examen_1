@@ -13,7 +13,7 @@ export interface ReporteResponse {
 
 @Injectable({ providedIn: 'root' })
 export class ReporteIaService {
-  private api = 'https://backend-ixkv.onrender.com';
+  private api = 'http://localhost:8000';
   constructor(private http: HttpClient) {}
 
   // Generar reporte por texto - Ciclo 5 - CU24

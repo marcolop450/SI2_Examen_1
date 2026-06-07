@@ -31,4 +31,11 @@ export class TenantService {
   obtenerPlanesGlobales(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/admin/cockpit/planes-globales`);
   }
+
+  // Dashboard admin-red
+  obtenerDashboardOwner(): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('auth_token') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`${this.apiUrl}/admin-red/dashboard-owner`, { headers });
+  }
 }

@@ -20,6 +20,7 @@ class PagoOut(BaseModel):
     metodo_enum:                MetodoPago
     estado_pago_enum:           str  # "completado" o "compensacion"
     fecha_pago_timestamp:       datetime
+    nombre_taller:              Optional[str] = None
 
     class Config:
         from_attributes = True

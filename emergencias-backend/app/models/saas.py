@@ -7,6 +7,7 @@
 from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
+import uuid
 from app.database import Base
 
 
@@ -22,9 +23,11 @@ class Plan(Base):
 class Tenant(Base):
     __tablename__ = "tenants"
 
-    id_tenant      = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    id_tenant      = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     nombre         = Column("nombre_comercial", String(150), nullable=False)
     subdominio     = Column("slug", String(100), unique=True, nullable=False)
+    nit            = Column(String(50), unique=True, nullable=False)
+    stripe_customer_id = Column(String(100), unique=True, nullable=True)
     fecha_creacion = Column("fecha_registro", DateTime(timezone=True), server_default=func.now())
 
     # Relaciones comerciales
@@ -41,12 +44,14 @@ class Tenant(Base):
 class Suscripcion(Base):
     __tablename__ = "suscripciones"
 
-    id_suscripcion    = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    id_suscripcion    = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     tenant_id         = Column(UUID(as_uuid=True), ForeignKey("tenants.id_tenant", ondelete="CASCADE"), nullable=False)
     plan_id           = Column(Integer, ForeignKey("planes.id_plan"), nullable=False)
     fecha_inicio      = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     fecha_vencimiento = Column(DateTime(timezone=True), nullable=False)
     estado            = Column(String(50), default="activo", nullable=False)
+    transaccion_pago_simulado = Column(String(100), nullable=True)
+    cantidad_actual_talleres  = Column(Integer, default=0, nullable=False)
 
     # Relaciones
     tenant            = relationship("Tenant", back_populates="suscripciones")

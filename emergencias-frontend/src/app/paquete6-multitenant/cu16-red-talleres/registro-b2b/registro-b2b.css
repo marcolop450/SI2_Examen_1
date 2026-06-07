@@ -190,6 +190,62 @@ legend {
   cursor: not-allowed;
 }
 
+/* === BOTÓN GPS === */
+.btn-gps {
+  background: #e2e8f0;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 42px; /* Alineado con los inputs */
+}
+
+.btn-gps:hover {
+  background: #cbd5e1;
+  border-color: #94a3b8;
+}
+
+/* === PASARELA PAYPAL === */
+.paypal-section {
+  text-align: center;
+  padding: 1rem 0;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resumen-pago {
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px dashed #cbd5e1;
+}
+
+.resumen-pago h3 {
+  font-size: 1.2rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.resumen-pago p {
+  font-size: 1.1rem;
+  color: #334155;
+  margin: 0;
+}
+
+.resumen-pago strong {
+  color: #16a34a;
+  font-size: 1.3rem;
+}
+
 /* === FOOTER === */
 .form-footer {
   text-align: center;

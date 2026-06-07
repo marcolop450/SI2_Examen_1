@@ -22,6 +22,6 @@ export class Inicio implements OnInit {
     const rol = localStorage.getItem('rol') || 'taller';
     this.rolUsuario = rol.toLowerCase();
     this.tenantId = localStorage.getItem('tenant_id');
-    this.esTenantOwner = this.rolUsuario === 'taller' && this.tenantId !== null && this.tenantId !== 'null' && this.tenantId !== 'undefined';
+    this.esTenantOwner = this.rolUsuario === 'admin_red';
   }
 }

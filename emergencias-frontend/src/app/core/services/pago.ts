@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PagoService {
-  private apiUrl = 'https://backend-ixkv.onrender.com/pagos';
+  private apiUrl = 'http://localhost:8000/pagos';
 
   constructor(private http: HttpClient) {}
   private getAuthHeaders() {

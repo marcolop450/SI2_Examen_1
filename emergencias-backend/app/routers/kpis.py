@@ -44,12 +44,17 @@ ESTADOS_FINALIZADOS = [EstadoIncidente.atendido, EstadoIncidente.finalizado]
 # Descripción: Obtiene el taller del usuario si no es admin
 # Ciclo: Ciclo 5
 # CU: CU22
-def _get_taller_usuario(db: Session, user: Usuario):
-    """Obtiene el taller del usuario si es rol taller - Ciclo 5 - CU22"""
+def _get_talleres_ids(db: Session, user: Usuario):
+    """Obtiene los IDs de los talleres según el alcance del usuario - Ciclo 5 - CU22"""
     if user.rol == TipoRol.admin:
         return None  # Admin ve todo
-    taller = db.query(Taller).filter(Taller.dueño_id == user.id_usuario).first()
-    return taller
+    if user.rol == TipoRol.admin_red:
+        talleres = db.query(Taller.id_taller).filter(Taller.tenant_id == user.tenant_id).all()
+        return [t[0] for t in talleres] if talleres else [-1]
+    if user.rol == TipoRol.taller:
+        taller = db.query(Taller.id_taller).filter(Taller.dueño_id == user.id_usuario).first()
+        return [taller[0]] if taller else [-1]
+    return [-1]
 
 
 # ===================================================================
@@ -63,17 +68,21 @@ def obtener_resumen_kpis(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
 
     # Base query filtrada por taller si aplica - Ciclo 5 - CU22
     q_incidentes = db.query(Incidente)
     q_pagos = db.query(Pago)
     q_tecnicos = db.query(Tecnico)
 
-    if taller:
-        q_incidentes = q_incidentes.filter(Incidente.taller_actual_id == taller.id_taller)
-        q_pagos = q_pagos.filter(Pago.dueño_taller_id == current_user.id_usuario)
-        q_tecnicos = q_tecnicos.filter(Tecnico.taller_id == taller.id_taller)
+    if talleres_ids is not None:
+        q_incidentes = q_incidentes.filter(Incidente.taller_actual_id.in_(talleres_ids))
+        if current_user.rol == TipoRol.admin_red:
+            duenos_ids = [t.dueño_id for t in db.query(Taller).filter(Taller.tenant_id == current_user.tenant_id).all()]
+            q_pagos = q_pagos.filter(Pago.dueño_taller_id.in_(duenos_ids if duenos_ids else [-1]))
+        else:
+            q_pagos = q_pagos.filter(Pago.dueño_taller_id == current_user.id_usuario)
+        q_tecnicos = q_tecnicos.filter(Tecnico.taller_id.in_(talleres_ids))
 
     total = q_incidentes.count()
     activos = q_incidentes.filter(Incidente.estado_enum.in_(ESTADOS_ACTIVOS)).count()
@@ -91,8 +100,8 @@ def obtener_resumen_kpis(
     calif_promedio = 0.0
     if Calificacion is not None:
         q_calif = db.query(func.avg(Calificacion.puntuacion))
-        if taller:
-            q_calif = q_calif.filter(Calificacion.taller_id == taller.id_taller)
+        if talleres_ids is not None:
+            q_calif = q_calif.filter(Calificacion.taller_id.in_(talleres_ids))
         avg_val = q_calif.scalar()
         calif_promedio = round(float(avg_val), 1) if avg_val else 0.0
 
@@ -138,7 +147,7 @@ def incidentes_por_mes(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     hace_6_meses = datetime.now() - timedelta(days=180)
 
     q = db.query(
@@ -147,8 +156,8 @@ def incidentes_por_mes(
         func.count(Incidente.id_incidente).label('total')
     ).filter(Incidente.fecha_creacion_timestamp >= hace_6_meses)
 
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
 
     q = q.group_by('anio', 'mes').order_by('anio', 'mes')
     resultados = q.all()
@@ -172,14 +181,14 @@ def distribucion_por_estado(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
 
     q = db.query(
         Incidente.estado_enum,
         func.count(Incidente.id_incidente).label('total')
     )
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
 
     q = q.group_by(Incidente.estado_enum)
     resultados = q.all()
@@ -205,14 +214,14 @@ def distribucion_por_prioridad(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
 
     q = db.query(
         Incidente.prioridad_enum,
         func.count(Incidente.id_incidente).label('total')
     )
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
 
     q = q.group_by(Incidente.prioridad_enum)
     resultados = q.all()
@@ -236,7 +245,13 @@ def ranking_talleres(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    talleres = db.query(Taller).all()
+    talleres_ids = _get_talleres_ids(db, current_user)
+    
+    q_talleres = db.query(Taller)
+    if talleres_ids is not None:
+        q_talleres = q_talleres.filter(Taller.id_taller.in_(talleres_ids))
+    talleres = q_talleres.all()
+
     ranking = []
 
     for t in talleres:
@@ -252,11 +267,17 @@ def ranking_talleres(
             ).scalar()
             calif_prom = round(float(avg_val), 1) if avg_val else 0.0
 
+        ingresos = db.query(func.coalesce(func.sum(Pago.monto_total_decimal), 0)).filter(
+            Pago.dueño_taller_id == t.dueño_id
+        ).scalar()
+        ingresos_totales = float(ingresos) if ingresos else 0.0
+
         ranking.append(TallerRanking(
             taller_id=t.id_taller,
             nombre=t.nombre,
             servicios_completados=servicios,
-            calificacion_promedio=calif_prom
+            calificacion_promedio=calif_prom,
+            ingresos_totales=ingresos_totales
         ))
 
     # Ordenar por servicios completados DESC - Ciclo 5 - CU22
@@ -275,13 +296,13 @@ def tiempo_respuesta(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
 
     q = db.query(Incidente).filter(
         Incidente.estado_enum.in_(ESTADOS_FINALIZADOS)
     )
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
 
     incidentes = q.all()
     tiempos = []
@@ -314,10 +335,10 @@ def tiempo_asignacion(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     q = db.query(Incidente)
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
     incidentes = q.all()
     tiempos = []
 
@@ -348,10 +369,10 @@ def tiempo_llegada(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     q = db.query(Incidente)
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
     incidentes = q.all()
     tiempos = []
 
@@ -389,10 +410,10 @@ def incidentes_por_tipo(
     from app.models.incidente import EvidenciaIA
     import re
 
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     q = db.query(Incidente)
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
     incidentes = q.all()
 
     # #Ciclo5 CU22 Extraer tipo de clasificación IA [TIPO]
@@ -425,13 +446,13 @@ def zonas_incidentes(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     q = db.query(Incidente).filter(
         Incidente.latitud_emergencia.isnot(None),
         Incidente.longitud_emergencia.isnot(None)
     )
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
     incidentes = q.all()
 
     # #Ciclo5 CU22 Redondear coordenadas a 2 decimales para agrupar zonas
@@ -464,12 +485,12 @@ def cumplimiento_sla(
 ):
     SLA_MINUTOS = 60  # #Ciclo5 CU22 SLA objetivo: 60 minutos
 
-    taller = _get_taller_usuario(db, current_user)
+    talleres_ids = _get_talleres_ids(db, current_user)
     q = db.query(Incidente).filter(
         Incidente.estado_enum.in_(ESTADOS_FINALIZADOS)
     )
-    if taller:
-        q = q.filter(Incidente.taller_actual_id == taller.id_taller)
+    if talleres_ids is not None:
+        q = q.filter(Incidente.taller_actual_id.in_(talleres_ids))
     finalizados = q.all()
 
     total = len(finalizados)

@@ -12,10 +12,12 @@ import { PagoService } from '../../core/services/pago';
 export class IngresosTallerComponent implements OnInit {
   pagos: any[] = [];
   cargando: boolean = true;
+  rolUsuario: string = '';
 
   constructor(private pagoService: PagoService) {}
 
   ngOnInit(): void {
+    this.rolUsuario = localStorage.getItem('rol') || '';
     this.cargarMisIngresos();
   }
 

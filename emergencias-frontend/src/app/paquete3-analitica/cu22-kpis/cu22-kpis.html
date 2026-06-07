@@ -209,6 +209,7 @@
           <span>Taller</span>
           <span>Servicios</span>
           <span>Calificación</span>
+          <span>Ingresos Generados</span>
         </div>
         <div class="ranking-row" *ngFor="let t of talleresRanking; let i = index">
           <span class="rank-badge" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">{{ i+1 }}</span>
@@ -217,6 +218,9 @@
           <span class="rank-stars">
             <span *ngFor="let s of getEstrellas(t.calificacion_promedio)">⭐</span>
             {{ t.calificacion_promedio }}
+          </span>
+          <span class="rank-revenue" style="color: #059669; font-weight: 600;">
+            {{ t.ingresos_totales | number:'1.0-0' }} Bs.
           </span>
         </div>
       </div>

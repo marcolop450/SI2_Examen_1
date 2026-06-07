@@ -81,23 +81,28 @@
         <span class="icon">💰</span> Mis Ingresos
       </a>
 
-      <!-- 🆕 SECCIÓN CU16: TENANT OWNER (solo si tiene tenant_id) -->
-      <ng-container *ngIf="esTenantOwner">
-        <p class="nav-title">Paquete 6: Mi Red</p>
-        <a routerLink="/dashboard-owner" routerLinkActive="active" class="nav-link">
-          <span class="icon">🏪</span> Mi Red de Talleres
-        </a>
-      </ng-container>
-      <!-- Ciclo 5 - CU22, CU23, CU25 -->
-      <p class="nav-title">Ciclo 5: Analítica</p>
+      <p class="nav-title">Analítica y Calidad</p>
       <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
-        <span class="icon">📊</span> Mi Analítica
+        <span class="icon">📊</span> Analítica KPIs
       </a>
       <a routerLink="/calificaciones" routerLinkActive="active" class="nav-link">
         <span class="icon">⭐</span> Calificaciones
       </a>
       <a routerLink="/consejos-viales" routerLinkActive="active" class="nav-link">
         <span class="icon">🛡️</span> Consejos Viales
+      </a>
+
+    </ng-container>
+    
+    <ng-container *ngIf="rolUsuario === 'admin_red'">
+      <p class="nav-title">Paquete 6: Mi Red</p>
+      <a routerLink="/dashboard-owner" routerLinkActive="active" class="nav-link">
+        <span class="icon">🏪</span> Mi Red de Talleres
+      </a>
+      
+      <p class="nav-title">Analítica</p>
+      <a routerLink="/kpis" routerLinkActive="active" class="nav-link">
+        <span class="icon">📊</span> Mi Analítica
       </a>
     </ng-container>
     <ng-container *ngIf="rolUsuario === 'tecnico'">

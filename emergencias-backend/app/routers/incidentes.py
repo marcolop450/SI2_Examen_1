@@ -420,8 +420,14 @@ def listar_solicitudes_pendientes(
             query = db.query(Incidente).filter(
                 Incidente.estado_enum == EstadoIncidente.pendiente
             )
+            from sqlalchemy import or_
             if tenant_id is not None:
-                query = query.filter(Incidente.tenant_id == tenant_id)
+                query = query.filter(
+                    or_(
+                        Incidente.tenant_id == tenant_id,
+                        Incidente.tenant_id.is_(None)
+                    )
+                )
             return query.all()
         return []
 
@@ -431,15 +437,6 @@ def listar_solicitudes_pendientes(
     ).all()
     ids_rechazados = [r[0] for r in rechazados]
 
-    # Solo ver el incidente asignado a este taller y que no haya rechazado
-    query = db.query(Incidente).filter(
-        Incidente.estado_enum == EstadoIncidente.pendiente,
-        Incidente.taller_actual_id == taller.id_taller,
-        Incidente.id_incidente.notin_(ids_rechazados)
-    )
-    if tenant_id is not None:
-        query = query.filter(Incidente.tenant_id == tenant_id)
-    return query.all()
     # #Ciclo5 Obtener incidentes ya cotizados por este taller (para no mostrar de nuevo)
     from app.models.cotizacion import Cotizacion
     ya_cotizados = db.query(Cotizacion.incidente_id).filter(
@@ -447,16 +444,29 @@ def listar_solicitudes_pendientes(
     ).all()
     ids_ya_cotizados = [c[0] for c in ya_cotizados]
 
-    # #Ciclo5 NUEVO: Mostrar TODOS los incidentes en buscando_taller
-    # que no hayan sido rechazados ni ya cotizados por este taller
-    return db.query(Incidente).filter(
+    # Mostrar incidentes asignados directamente a este taller (pendiente)
+    # o que estén en "buscando_taller" (abiertos a cotización)
+    query = db.query(Incidente).filter(
         Incidente.estado_enum.in_([
             EstadoIncidente.pendiente,
             EstadoIncidente.buscando_taller
         ]),
         Incidente.id_incidente.notin_(ids_rechazados),
         Incidente.id_incidente.notin_(ids_ya_cotizados)
-    ).all()
+    )
+
+    # Permitir a los talleres ver incidentes globales (tenant_id IS NULL)
+    # o incidentes de su propio tenant
+    from sqlalchemy import or_
+    if tenant_id is not None:
+        query = query.filter(
+            or_(
+                Incidente.tenant_id == tenant_id,
+                Incidente.tenant_id.is_(None)
+            )
+        )
+    
+    return query.all()
 # ===================================================================
 # CU10: ACEPTAR O RECHAZAR SOLICITUD (taller responde en web)
 # #Ciclo5 NOTA: En el flujo nuevo, el taller usa cotizaciones (CU18).
@@ -708,8 +718,14 @@ def listar_solicitudes_en_proceso(
     query = db.query(Incidente).filter(Incidente.estado_enum.in_(estados_activos))
 
     # CU16: Filtro Multi-Tenant
+    from sqlalchemy import or_
     if tenant_id is not None:
-        query = query.filter(Incidente.tenant_id == tenant_id)
+        query = query.filter(
+            or_(
+                Incidente.tenant_id == tenant_id,
+                Incidente.tenant_id.is_(None)
+            )
+        )
 
     # Si es taller, filtrar solo sus incidentes
     if current_user.rol.value != "admin":
@@ -1036,8 +1052,14 @@ def obtener_historial_tecnico(
         Incidente.tecnico_id == tecnico.id_tecnico,
         Incidente.estado_enum.in_([EstadoIncidente.atendido, EstadoIncidente.finalizado])
     )
+    from sqlalchemy import or_
     if tenant_id is not None:
-        query = query.filter(Incidente.tenant_id == tenant_id)
+        query = query.filter(
+            or_(
+                Incidente.tenant_id == tenant_id,
+                Incidente.tenant_id.is_(None)
+            )
+        )
     incidentes = query.order_by(Incidente.fecha_creacion_timestamp.desc()).all()
 
     resultado = []

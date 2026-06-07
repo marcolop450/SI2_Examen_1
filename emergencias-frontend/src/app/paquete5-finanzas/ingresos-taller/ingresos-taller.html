@@ -35,6 +35,7 @@
               <th>ID Pago</th>
               <th>Emergencia</th>
               <th>Fecha</th>
+              <th *ngIf="rolUsuario === 'admin_red'">Taller / Sucursal</th>
               <th>Método</th>
               <th>Cobro Total</th>
               <th class="col-comision">Descuento Comisión (10%)</th>
@@ -45,6 +46,9 @@
               <td><strong>#{{ p.id_pago }}</strong></td>
               <td>Incidente #{{ p.incidente_id }}</td>
               <td>{{ p.fecha_pago_timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td *ngIf="rolUsuario === 'admin_red'">
+                <span style="font-weight: 600; color: #1e40af;">{{ p.nombre_taller }}</span>
+              </td>
               <td>
                 <span class="badge-metodo">{{ p.metodo_enum | uppercase }}</span>
               </td>

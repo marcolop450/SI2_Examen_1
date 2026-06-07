@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models import bitacora
 from app.models import taller_rechazo
-from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones, saas
+from app.routers import auth, usuarios, talleres, vehiculos, tecnicos, incidentes, ia, notificaciones, pagos, websocket_incidente, cotizaciones, saas, admin_red
 from app.models import calificacion, consejo_vial  # Modelos nuevos - Ciclo 5 - CU23, CU25
 from app.routers import bitacora as bitacora_router, kpis, calificaciones, reportes_ia, consejos_viales  # Routers - Ciclo 5
 app = FastAPI(
@@ -37,6 +37,7 @@ app.include_router(pagos.router)
 app.include_router(websocket_incidente.router)
 app.include_router(cotizaciones.router)
 app.include_router(saas.router)           # CU16 - /admin/cockpit
+app.include_router(admin_red.router)      # CU16 - /admin-red
 
 # -------------------------------------------------------
 # CORS: permite que Angular (localhost:4200) consuma la API

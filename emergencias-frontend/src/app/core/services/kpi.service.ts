@@ -38,11 +38,12 @@ export interface TallerRanking {
   nombre: string;
   servicios_completados: number;
   calificacion_promedio: number;
+  ingresos_totales: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class KpiService {
-  private api = 'https://backend-ixkv.onrender.com';
+  private api = 'http://localhost:8000';
   constructor(private http: HttpClient) {}
 
   // Resumen general de KPIs - Ciclo 5 - CU22

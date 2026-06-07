@@ -95,4 +95,20 @@ def listar_mis_ingresos(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    return db.query(Pago).filter(Pago.dueño_taller_id == current_user.id_usuario).all()
+    from app.models.usuario import TipoRol
+    
+    if current_user.rol == TipoRol.admin_red:
+        dueños_ids = db.query(Taller.dueño_id).filter(Taller.tenant_id == current_user.tenant_id).all()
+        dueños_ids = [d[0] for d in dueños_ids]
+        pagos = db.query(Pago).filter(Pago.dueño_taller_id.in_(dueños_ids)).all()
+    else:
+        pagos = db.query(Pago).filter(Pago.dueño_taller_id == current_user.id_usuario).all()
+        
+    pagos_out = []
+    for pago in pagos:
+        taller = db.query(Taller).filter(Taller.dueño_id == pago.dueño_taller_id).first()
+        p_dict = {c.name: getattr(pago, c.name) for c in pago.__table__.columns}
+        p_dict["nombre_taller"] = taller.nombre if taller else "Desconocido"
+        pagos_out.append(p_dict)
+
+    return pagos_out

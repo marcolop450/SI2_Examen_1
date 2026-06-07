@@ -1,5 +1,6 @@
 // #Ciclo5 CU22 Panel de KPIs y Analítica Operacional - COMPLETO según enunciado
-// Dashboard con todos los KPIs obligatorios del examen
+// Dashboard con todos los KPIs obligatorios del examen.
+
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';

@@ -7,7 +7,7 @@ import { Taller } from '../../shared/models/taller.model';
   providedIn: 'root'
 })
 export class TallerService {
-  private apiUrl = 'https://backend-ixkv.onrender.com/talleres/';
+  private apiUrl = 'http://localhost:8000/talleres/';
 
   constructor(private http: HttpClient) {}
 

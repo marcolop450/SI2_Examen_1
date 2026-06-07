@@ -17,7 +17,7 @@ export interface BitacoraEntry {
 
 @Injectable({ providedIn: 'root' })
 export class BitacoraService {
-  private api = 'https://backend-ixkv.onrender.com';
+  private api = 'http://localhost:8000';
   constructor(private http: HttpClient) {}
 
   // Obtener bitácora completa de un incidente - Ciclo 5 - CU21

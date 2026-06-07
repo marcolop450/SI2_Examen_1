@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class IncidenteService {
-  private apiUrl = 'https://backend-ixkv.onrender.com/incidentes';
+  private apiUrl = 'http://localhost:8000/incidentes';
 
   constructor(private http: HttpClient) {}
 

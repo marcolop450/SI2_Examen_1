@@ -75,13 +75,6 @@ class TenantRegisterTenant(BaseModel):
     subdominio:       str
     plan_id:          int = 1  # Por defecto Plan Básico
 
-class TenantRegisterTaller(BaseModel):
-    nombre:            str
-    direccion:         Optional[str] = None
-    nit:               Optional[str] = None
-    latitud_decimal:   Optional[Decimal] = None
-    longitud_decimal:  Optional[Decimal] = None
-
 class TenantRegisterUser(BaseModel):
     nombre:   str
     email:    EmailStr
@@ -90,7 +83,6 @@ class TenantRegisterUser(BaseModel):
 
 class TenantRegisterRequest(BaseModel):
     tenant:  TenantRegisterTenant
-    taller:  TenantRegisterTaller
     usuario: TenantRegisterUser
 
 
