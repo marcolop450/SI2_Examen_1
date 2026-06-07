@@ -26,7 +26,7 @@ export interface PromedioCalificacion {
 
 @Injectable({ providedIn: 'root' })
 export class CalificacionService {
-  private api = 'http://localhost:8000';
+  private api = 'https://backend-ixkv.onrender.com';
   constructor(private http: HttpClient) {}
 
   // Obtener mis calificaciones (vista taller) - Ciclo 5 - CU23

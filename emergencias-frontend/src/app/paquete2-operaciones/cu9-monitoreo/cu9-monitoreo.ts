@@ -39,7 +39,7 @@ export class Cu9Monitoreo implements OnInit, OnDestroy {
   // 1. Carga inicial vía HTTP (Reemplaza el Polling de 10s)
   // =========================================================
   cargarSeguimientoInicial() {
-    this.http.get<any[]>('http://localhost:8000/incidentes/en-proceso').subscribe({
+    this.http.get<any[]>('https://backend-ixkv.onrender.com/incidentes/en-proceso').subscribe({
       next: (data) => {
         this.serviciosActivos = data;
         this.cargando = false;
@@ -63,7 +63,7 @@ export class Cu9Monitoreo implements OnInit, OnDestroy {
     // Evitar abrir una conexión si ya existe una activa para este incidente
     if (this.wsConnections[incidenteId]) return;
 
-    const url = `ws://localhost:8000/ws/incidente/${incidenteId}`;
+    const url = `wss://backend-ixkv.onrender.com/ws/incidente/${incidenteId}`;
     const ws = new WebSocket(url);
 
     ws.onopen = () => console.log(`WS Conectado para incidente #${incidenteId}`);
@@ -172,7 +172,7 @@ export class Cu9Monitoreo implements OnInit, OnDestroy {
   finalizarServicio(id: number) {
     if (!confirm('¿Confirmas que el servicio ha sido finalizado con éxito?')) return;
 
-    this.http.put(`http://localhost:8000/incidentes/${id}/estado`, {
+    this.http.put(`https://backend-ixkv.onrender.com/incidentes/${id}/estado`, {
       estado_enum: 'atendido',
       comentario: 'Servicio cerrado desde panel web.'
     }).subscribe(() => {

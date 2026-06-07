@@ -16,7 +16,7 @@ export class OfflineEmergenciaService {
   pendientes$ = this._pendientes$.asObservable();
 
   private STORAGE_KEY = 'emergencias_offline_queue';
-  private API_URL = 'http://localhost:8000';
+  private API_URL = 'https://backend-ixkv.onrender.com';
   private sincronizando = false;
 
   constructor(private http: HttpClient) {
